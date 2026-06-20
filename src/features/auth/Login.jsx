@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { mockUsers } from '../../api/mockData';
 
 const Login = () => {
   const [email, setEmail] = useState('founder@example.com');
   const [password, setPassword] = useState('password');
+  const [role, setRole] = useState('founder');
   const [error, setError] = useState('');
   
   const login = useAuthStore(state => state.login);
@@ -16,11 +16,11 @@ const Login = () => {
     e.preventDefault();
     setError('');
     
-    // Mock authentication
-    const user = mockUsers.find(u => u.email === email && u.password === password);
+    // In our mock logic, let's just use the selected role to map to the correct mock user
+    const targetEmail = role === 'founder' ? 'founder@example.com' : 'investor@example.com';
+    const user = mockUsers.find(u => u.email === targetEmail);
     
-    if (user) {
-      // Don't store password in real app
+    if (user && password === 'password') {
       const { password: _, ...userData } = user;
       login(userData);
       navigate(`/${userData.role}/dashboard`);
@@ -30,46 +30,57 @@ const Login = () => {
   };
 
   return (
-    <div className="card shadow-lg border-0">
-      <div className="card-body p-4 p-md-5">
-        <h2 className="text-center mb-4 fw-bold">Welcome Back</h2>
+    <div className="auth-screen">
+      <div className="auth-card">
+        <div className="auth-logo"><span className="auth-logo-dot"></span>InvestScore</div>
+        <div className="auth-title">Welcome Back</div>
+        <div className="auth-sub">Sign in to your account.</div>
         
-        {error && <div className="alert alert-danger py-2">{error}</div>}
+        {error && <div style={{color: 'var(--red)', textAlign: 'center', marginBottom: '16px'}}>{error}</div>}
         
         <form onSubmit={handleLogin}>
-          <div className="mb-3">
-            <label className="form-label text-secondary fw-medium">Email address</label>
+          <div className="input-grp">
+            <label className="input-lbl">I am a…</label>
+            <div className="role-pick">
+              <div className={`role-pill ${role === 'founder' ? 'selected' : ''}`} onClick={() => setRole('founder')}>
+                <div className="role-pill-ic">🚀</div>
+                <div className="role-pill-name">Founder</div>
+              </div>
+              <div className={`role-pill ${role === 'investor' ? 'selected' : ''}`} onClick={() => setRole('investor')}>
+                <div className="role-pill-ic">💼</div>
+                <div className="role-pill-name">Investor</div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="input-grp">
+            <label className="input-lbl">Work Email</label>
             <input 
               type="email" 
-              className="form-control form-control-lg" 
+              className="input filled" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="form-label text-secondary fw-medium">Password</label>
+          
+          <div className="input-grp">
+            <label className="input-lbl">Password</label>
             <input 
               type="password" 
-              className="form-control form-control-lg" 
+              className="input filled" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center gap-2">
-            <LogIn size={20} />
-            <span>Sign In</span>
+          
+          <button type="submit" className="btn btn-white btn-full" style={{marginTop: '6px'}}>
+            Sign In →
           </button>
         </form>
-
-        <div className="text-center mt-4 pt-3 border-top">
-           <p className="text-secondary mb-2">Test Accounts:</p>
-           <div className="d-flex flex-column gap-1 text-muted small">
-             <div>Founder: <strong>founder@example.com</strong> (password)</div>
-             <div>Investor: <strong>investor@example.com</strong> (password)</div>
-           </div>
-        </div>
+        
+        <div className="terms">Test password is: <b>password</b></div>
       </div>
     </div>
   );

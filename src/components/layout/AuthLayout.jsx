@@ -10,15 +10,7 @@ const AuthLayout = () => {
   }
 
   return (
-    <div className="d-flex min-vh-100 align-items-center justify-content-center bg-base">
-      <div className="w-100 p-4" style={{ maxWidth: '450px' }}>
-        <div className="text-center mb-5">
-          <h1 className="h2 fw-bold score-gradient mb-1">InvestScore</h1>
-          <p className="text-secondary">The platform matching elite startups with top investors.</p>
-        </div>
-        <Outlet />
-      </div>
-    </div>
+    <Outlet />
   );
 };
 

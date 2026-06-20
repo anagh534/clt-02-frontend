@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
 import { useFounderStartup, useSaveStartupScore } from '../../hooks/useFounder';
 import Spinner from '../../components/ui/Spinner';
 
@@ -26,7 +25,7 @@ const ScoreForm = () => {
     }
   }, [initialData]);
 
-  if (isLoading) return <Spinner text="Loading your data..." />;
+  if (isLoading) return <Spinner text="Loading..." />;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,135 +37,116 @@ const ScoreForm = () => {
     }
   };
 
-  const nextStep = () => setStep(prev => Math.min(prev + 1, 3));
-  const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
+  const handleSelect = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     saveMutation.mutate(formData, {
-      onSuccess: () => {
-        navigate('/founder/dashboard');
-      }
+      onSuccess: () => navigate('/founder/dashboard')
     });
   };
 
   return (
-    <div className="card shadow-sm border-0 mx-auto" style={{ maxWidth: '800px' }}>
-      <div className="card-header border-bottom p-4">
-        <h4 className="fw-bold mb-1">Calculate Your InvestScore</h4>
-        <p className="text-secondary mb-0">Step {step} of 3</p>
-        
-        <div className="progress mt-3" style={{ height: '8px' }}>
-          <div className="progress-bar bg-primary" style={{ width: `${(step / 3) * 100}%` }}></div>
+    <>
+      <div className="topbar">
+        <div>
+          <div className="topbar-title">Build your score</div>
+          <div className="topbar-sub">Answer a few questions to calculate your InvestScore.</div>
         </div>
       </div>
       
-      <div className="card-body p-4 p-md-5">
-        <form onSubmit={handleSubmit}>
-          
-          {/* STEP 1: Basic Info */}
+      <div className="form-layout">
+        <div>
           {step === 1 && (
-            <div className="row g-4">
-              <h5 className="fw-bold mb-2">Startup Basics</h5>
-              <div className="col-12">
-                <label className="form-label fw-medium">Startup Name</label>
-                <input type="text" className="form-control" name="name" value={formData.name} onChange={handleChange} required />
+            <>
+              <div className="q-group">
+                <div className="q-label">Startup Basics</div>
+                <div className="q-sub">What do you do?</div>
+                <div className="input-grp">
+                  <label className="input-lbl">Startup Name</label>
+                  <input className="input filled" name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Klimar Tech" />
+                </div>
+                <div className="input-grp">
+                  <label className="input-lbl">Tagline</label>
+                  <input className="input filled" name="tagline" value={formData.tagline} onChange={handleChange} placeholder="1 sentence pitch" />
+                </div>
+                <div className="input-grp">
+                  <label className="input-lbl">Industry</label>
+                  <select className="input filled" name="industry" value={formData.industry} onChange={handleChange}>
+                    <option>SaaS</option><option>Fintech</option><option>Climate</option><option>HealthTech</option>
+                  </select>
+                </div>
               </div>
-              <div className="col-12">
-                <label className="form-label fw-medium">Tagline</label>
-                <input type="text" className="form-control" name="tagline" value={formData.tagline} onChange={handleChange} required placeholder="What do you do in 1 sentence?" />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label fw-medium">Industry</label>
-                <select className="form-select" name="industry" value={formData.industry} onChange={handleChange}>
-                  <option>SaaS / AI</option>
-                  <option>HealthTech</option>
-                  <option>FinTech</option>
-                  <option>CleanTech</option>
-                  <option>Consumer</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div className="col-md-6">
-                <label className="form-label fw-medium">Location</label>
-                <input type="text" className="form-control" name="location" value={formData.location} onChange={handleChange} required />
-              </div>
-            </div>
+              <button className="btn btn-white" onClick={() => setStep(2)}>Continue →</button>
+            </>
           )}
 
-          {/* STEP 2: Details & Stage */}
           {step === 2 && (
-            <div className="row g-4">
-              <h5 className="fw-bold mb-2">Stage & Details</h5>
-              <div className="col-12">
-                <label className="form-label fw-medium">Current Stage</label>
-                <select className="form-select" name="stage" value={formData.stage} onChange={handleChange}>
-                  <option>Pre-Seed</option>
-                  <option>Seed</option>
-                  <option>Series A</option>
-                  <option>Series B+</option>
-                </select>
+            <>
+              <div className="q-group">
+                <div className="q-label">What stage are you?</div>
+                <div className="q-sub">Pick one</div>
+                <div className="opt-grid">
+                  {['Pre-Seed', 'Seed', 'Series A', 'Series B+'].map(stg => (
+                    <div key={stg} className={`opt ${formData.stage === stg ? 'selected' : ''}`} onClick={() => handleSelect('stage', stg)}>
+                      {stg}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="col-12">
-                <label className="form-label fw-medium">Problem & Solution (Description)</label>
-                <textarea className="form-control" name="description" rows="4" value={formData.description} onChange={handleChange} required></textarea>
+              <div className="q-group">
+                <div className="q-label">Location</div>
+                <div className="q-sub">City, Country</div>
+                <input className="input filled" name="location" value={formData.location} onChange={handleChange} placeholder="e.g. Lagos, NG" />
               </div>
-            </div>
+              <div style={{display: 'flex', gap: '12px'}}>
+                <button className="btn btn-ghost" onClick={() => setStep(1)}>← Back</button>
+                <button className="btn btn-white" onClick={() => setStep(3)}>Continue →</button>
+              </div>
+            </>
           )}
 
-          {/* STEP 3: Metrics */}
           {step === 3 && (
-            <div className="row g-4">
-              <h5 className="fw-bold mb-2">Key Metrics</h5>
-              <p className="text-secondary small mb-4">Investors rely heavily on traction and financial health.</p>
-              
-              <div className="col-md-4">
-                <label className="form-label fw-medium">Current ARR / Revenue</label>
-                <input type="text" className="form-control" name="metrics.arr" value={formData.metrics.arr} onChange={handleChange} placeholder="e.g. $100k" />
+            <>
+              <div className="q-group">
+                <div className="q-label">Financial Metrics</div>
+                <div className="q-sub">Approximate is fine for now</div>
+                <div className="input-grp">
+                  <label className="input-lbl">Current ARR / Revenue</label>
+                  <input className="input filled" name="metrics.arr" value={formData.metrics.arr} onChange={handleChange} placeholder="e.g. $48k" />
+                </div>
+                <div className="input-grp">
+                  <label className="input-lbl">Monthly Growth Rate</label>
+                  <input className="input filled" name="metrics.growth" value={formData.metrics.growth} onChange={handleChange} placeholder="e.g. 20%" />
+                </div>
+                <div className="input-grp">
+                  <label className="input-lbl">Runway</label>
+                  <input className="input filled" name="metrics.runway" value={formData.metrics.runway} onChange={handleChange} placeholder="e.g. 12 months" />
+                </div>
               </div>
-              <div className="col-md-4">
-                <label className="form-label fw-medium">Growth Rate</label>
-                <input type="text" className="form-control" name="metrics.growth" value={formData.metrics.growth} onChange={handleChange} placeholder="e.g. 10% MoM" />
+              <div style={{display: 'flex', gap: '12px'}}>
+                <button className="btn btn-ghost" onClick={() => setStep(2)}>← Back</button>
+                <button className="btn btn-white" onClick={handleSubmit} disabled={saveMutation.isPending}>
+                  {saveMutation.isPending ? 'Calculating...' : 'Calculate Score →'}
+                </button>
               </div>
-              <div className="col-md-4">
-                <label className="form-label fw-medium">Runway</label>
-                <input type="text" className="form-control" name="metrics.runway" value={formData.metrics.runway} onChange={handleChange} placeholder="e.g. 12 months" />
-              </div>
-            </div>
+            </>
           )}
+        </div>
 
-          <div className="d-flex justify-content-between mt-5 pt-4 border-top">
-            <button 
-              type="button" 
-              className="btn btn-light d-flex align-items-center gap-2" 
-              onClick={prevStep} 
-              disabled={step === 1}
-            >
-              <ArrowLeft size={18} /> Back
-            </button>
-            
-            {step < 3 ? (
-              <button 
-                type="button" 
-                className="btn btn-primary d-flex align-items-center gap-2" 
-                onClick={nextStep}
-              >
-                Next <ArrowRight size={18} />
-              </button>
-            ) : (
-              <button 
-                type="submit" 
-                className="btn btn-success d-flex align-items-center gap-2 text-white"
-                disabled={saveMutation.isPending}
-              >
-                {saveMutation.isPending ? <div className="spinner-border spinner-border-sm" /> : <CheckCircle size={18} />}
-                Complete & Calculate Score
-              </button>
-            )}
+        <div className="form-progress">
+          <div className="form-progress-card">
+            <div className="form-progress-pct">{Math.round((step / 3) * 100)}%</div>
+            <div className="form-progress-lbl">Step {step} of 3</div>
+            <div className="form-progress-bar">
+              <div className="form-progress-fill" style={{width: `${(step / 3) * 100}%`}}></div>
+            </div>
+            <div className="form-progress-note">The more accurate your answers, the more investors trust your score. You can update this later.</div>
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
