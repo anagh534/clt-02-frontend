@@ -1,34 +1,31 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import Layout from "../components/layout/Layout";
+import InvestorsList from "../pages/InvestorsList";
+import InvestorDetails from "../pages/InvestorDetails";
+import InvestorForm from "../pages/InvestorForm";
 
 function AppRoutes() {
-  // useSessionExpiry();
-
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<h1>Home Page</h1>} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      {/* <AnimatePresence mode="wait">
-      <Routes>
-        <Route path="/" element={<Navigate replace to="/app/dashboard" />} />
-        <Route element={<PublicRoute><AuthLayout /></PublicRoute>}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/verify-otp" element={<VerifyOtpPage />} />
-        </Route>
-
-        <Route path="/app" element={<AppLayout />}>
-          <Route index element={<Navigate replace to="dashboard" />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-        </Route>
-
-        <Route path="/unauthorized" element={<UnauthorizedPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </AnimatePresence> */}
-    </>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Navigate replace to="investors" />} />
+        
+        {/* Investors Routes */}
+        <Route path="investors" element={<InvestorsList />} />
+        <Route path="investors/new" element={<InvestorForm />} />
+        <Route path="investors/:id" element={<InvestorDetails />} />
+        <Route path="investors/:id/edit" element={<InvestorForm />} />
+        
+        {/* Placeholder for other routes like Settings */}
+        <Route path="settings" element={
+          <div className="p-4 text-center mt-5">
+            <h2 className="text-secondary fw-bold">Settings (Coming Soon)</h2>
+            <p className="text-muted">This page is under construction.</p>
+          </div>
+        } />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
