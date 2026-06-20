@@ -1,82 +1,46 @@
-export const mockInvestors = [
+export const mockUsers = [
+  { id: 'u1', email: 'founder@example.com', password: 'password', role: 'founder', name: 'Alice Founder' },
+  { id: 'u2', email: 'investor@example.com', password: 'password', role: 'investor', name: 'Bob Investor' }
+];
+
+export const mockStartups = [
   {
-    id: '1',
-    name: 'Eleanor Vance',
-    company: 'Vanguard Ventures',
-    email: 'eleanor@vanguard.vc',
-    phone: '+1 (555) 123-4567',
-    focus: 'Technology',
+    id: 's1',
+    founderId: 'u1',
+    name: 'TechFlow AI',
+    tagline: 'Automating workflows with generative AI',
+    industry: 'SaaS / AI',
+    stage: 'Seed',
     location: 'San Francisco, CA',
-    status: 'Active'
+    score: 85,
+    metrics: { arr: '$150k', growth: '15% MoM', runway: '12 months' },
+    description: 'TechFlow AI helps enterprises automate their document workflows using advanced LLMs.',
+    savedBy: []
   },
   {
-    id: '2',
-    name: 'Marcus Chen',
-    company: 'Horizon Capital',
-    email: 'm.chen@horizoncap.com',
-    phone: '+1 (555) 987-6543',
-    focus: 'Healthcare',
-    location: 'Boston, MA',
-    status: 'Active'
-  },
-  {
-    id: '3',
-    name: 'Sarah Jenkins',
-    company: 'Jenkins Family Office',
-    email: 'sarah@jenkinsfo.com',
-    phone: '+1 (555) 456-7890',
-    focus: 'Real Estate',
-    location: 'New York, NY',
-    status: 'Inactive'
-  },
-  {
-    id: '4',
-    name: 'David Okafor',
-    company: 'Okafor Angel Syndicate',
-    email: 'david@okaforangels.io',
-    phone: '+1 (555) 234-5678',
-    focus: 'Fintech',
+    id: 's2',
+    founderId: 'u3',
+    name: 'GreenEnergy Tech',
+    tagline: 'Next-gen solar storage',
+    industry: 'CleanTech',
+    stage: 'Series A',
     location: 'Austin, TX',
-    status: 'Active'
+    score: 92,
+    metrics: { arr: '$1.2M', growth: '5% MoM', runway: '24 months' },
+    description: 'Developing high-density battery storage for solar grids.',
+    savedBy: ['u2']
   },
   {
-    id: '5',
-    name: 'Liam Neeson',
-    company: 'Action Partners',
-    email: 'liam@actionpartners.com',
-    phone: '+1 (555) 876-5432',
-    focus: 'Entertainment',
-    location: 'Los Angeles, CA',
-    status: 'Inactive'
-  },
-  {
-    id: '6',
-    name: 'Elena Rodriguez',
-    company: 'Green Future Fund',
-    email: 'elena@greenfuture.vc',
-    phone: '+1 (555) 345-6789',
-    focus: 'CleanTech',
-    location: 'Seattle, WA',
-    status: 'Active'
-  },
-  {
-    id: '7',
-    name: 'Akira Takahashi',
-    company: 'Takahashi Investments',
-    email: 'akira@takahashi.co.jp',
-    phone: '+81 90-1234-5678',
-    focus: 'Robotics',
-    location: 'Tokyo, Japan',
-    status: 'Active'
-  },
-  {
-    id: '8',
-    name: 'Sophie Martin',
-    company: 'EuroSeed',
-    email: 'sophie@euroseed.eu',
-    phone: '+33 6 12 34 56 78',
-    focus: 'SaaS',
-    location: 'Paris, France',
-    status: 'Active'
+    id: 's3',
+    founderId: 'u4',
+    name: 'MediSync',
+    tagline: 'Unified patient records',
+    industry: 'HealthTech',
+    stage: 'Pre-Seed',
+    location: 'Boston, MA',
+    score: 74,
+    metrics: { arr: '$0', growth: 'N/A', runway: '8 months' },
+    description: 'A platform connecting disparate EHR systems into a single patient timeline.',
+    savedBy: []
   }
 ];
