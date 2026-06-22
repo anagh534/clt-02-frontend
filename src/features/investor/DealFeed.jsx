@@ -39,15 +39,16 @@ const DealFeed = () => {
           const isHigh = startup.score >= 70;
           
           return (
-            <Link to={`/investor/startup/${startup.id}`} className={`startup-card ${isNew ? 'new' : ''}`} key={startup.id}>
+            <Link to={`/investor/startup/${startup.id}`} className="startup-card" key={startup.id}>
               <div className="startup-head">
-                <div className={`startup-logo ${!isHigh ? 'b' : ''}`}>{startup.name.charAt(0)}</div>
-                <div>
+                <div className={`startup-logo${!isHigh ? ' b' : ''}`}>{startup.name.charAt(0)}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="startup-name">{startup.name} <span className="verif-mini">✓</span></div>
                   <div className="startup-sector">{startup.industry} · {startup.location}</div>
                 </div>
                 <div className="startup-score-wrap">
-                  <div className={`startup-score-num ${!isHigh ? 'b' : ''}`}>{startup.score}</div>
+                  {isNew && <span className="new-badge">NEW</span>}
+                  <div className={`startup-score-num${!isHigh ? ' b' : ''}`}>{startup.score}</div>
                   <div className="startup-score-lbl">{scoreTier}</div>
                 </div>
               </div>
