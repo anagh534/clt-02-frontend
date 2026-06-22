@@ -14,31 +14,31 @@ const FounderDashboard = () => {
       <>
         <div className="topbar">
           <div>
-            <div className="topbar-title">Hi, {user?.name?.split(' ')[0]}</div>
+            <div className="topbar-title"><span className="dim">Welcome,</span> <strong>{user?.name?.split(' ')[0]}</strong></div>
             <div className="topbar-sub">Let's get you set up.</div>
           </div>
         </div>
         <div className="card" style={{textAlign: 'center', padding: '60px 20px'}}>
           <div className="card-h">Calculate your InvestScore</div>
           <p style={{color: 'var(--ink-dim)', marginBottom: '24px'}}>You haven't set up your startup profile yet.</p>
-          <Link to="/founder/onboarding" className="btn btn-white">Start Scoring →</Link>
+          <Link to="/founder/onboarding" className="btn btn-accent">Start Scoring →</Link>
         </div>
       </>
     );
   }
 
-  const scoreTier = startup.score >= 800 ? 'A+' : startup.score >= 700 ? 'A' : startup.score >= 600 ? 'B' : 'C';
+  const scoreTier = startup.score >= 90 ? 'A+' : startup.score >= 80 ? 'A' : startup.score >= 70 ? 'B' : 'C';
 
   return (
     <>
       <div className="topbar">
         <div>
-          <div className="topbar-title">Hi, {user?.name?.split(' ')[0]}</div>
+          <div className="topbar-title"><span className="dim">Welcome,</span> <strong>{user?.name?.split(' ')[0]}</strong></div>
           <div className="topbar-sub">{startup.name} · {startup.stage}</div>
         </div>
         <div className="topbar-actions">
           <div className="icon-btn">🔔</div>
-          <Link to="/founder/onboarding" className="btn btn-white">✎ Update Metrics</Link>
+          <Link to="/founder/onboarding" className="btn btn-accent btn-pill-sm">✎ Update Metrics</Link>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ const FounderDashboard = () => {
           <div className="score-label">Your InvestScore</div>
           <div className="score-row">
             <div className="score-big">{startup.score}</div>
-            <div className="score-max">/ 1000</div>
+            <div className="score-max">/ 100</div>
           </div>
           <div className="score-delta">↑ +23 this week</div>
           <div className="score-tier">
@@ -92,15 +92,15 @@ const FounderDashboard = () => {
         </div>
       </div>
 
-      <div style={{marginTop: '40px'}}>
-        <div className="card-h" style={{marginBottom: '16px'}}>Improve your score</div>
+      <div className="card" style={{ marginTop: 'var(--sp-6)' }}>
+        <div className="card-h">Improve your score</div>
         <div className="tip-card">
           <div className="tip-ic">📈</div>
           <div className="tip-info">
             <div className="tip-ttl">Add complete revenue data</div>
-            <div class="tip-sub">Unlock +40 points and reach Tier A+</div>
+            <div className="tip-sub">Unlock +40 points and reach Tier A+</div>
           </div>
-          <div className="tip-pts">+40</div>
+          <div className="tip-pts">+40 pts</div>
         </div>
       </div>
     </>

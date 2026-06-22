@@ -17,7 +17,7 @@ const DealFeed = () => {
     <>
       <div className="topbar">
         <div>
-          <div className="topbar-title">Good morning, {user?.name?.split(' ')[0]}</div>
+          <div className="topbar-title"><span className="dim">Welcome,</span> <strong>{user?.name?.split(' ')[0]}</strong></div>
           <div className="topbar-sub">{filteredStartups?.length} new matches today</div>
         </div>
         <div className="topbar-actions">
@@ -35,8 +35,8 @@ const DealFeed = () => {
         {filteredStartups?.map((startup, idx) => {
           const isSaved = startup.savedBy?.includes(user?.id);
           const isNew = idx < 2; // Mocking new tag
-          const scoreTier = startup.score >= 800 ? 'Tier A+' : startup.score >= 700 ? 'Tier A' : startup.score >= 600 ? 'Tier B' : 'Tier C';
-          const isHigh = startup.score >= 700;
+          const scoreTier = startup.score >= 90 ? 'Tier A+' : startup.score >= 80 ? 'Tier A' : startup.score >= 70 ? 'Tier B' : 'Tier C';
+          const isHigh = startup.score >= 70;
           
           return (
             <Link to={`/investor/startup/${startup.id}`} className={`startup-card ${isNew ? 'new' : ''}`} key={startup.id}>

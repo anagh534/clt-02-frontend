@@ -25,7 +25,7 @@ const SavedStartups = () => {
       ) : (
         <div className="saved-table">
           {savedStartups.map(startup => {
-            const isHigh = startup.score >= 700;
+            const isHigh = startup.score >= 70;
             return (
               <Link to={`/investor/startup/${startup.id}`} className="saved-row" key={startup.id}>
                 <div className={`saved-logo ${!isHigh ? 'b' : ''}`}>{startup.name.charAt(0)}</div>

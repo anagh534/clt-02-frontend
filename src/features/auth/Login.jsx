@@ -75,7 +75,7 @@ const Login = () => {
             />
           </div>
           
-          <button type="submit" className="btn btn-white btn-full" style={{marginTop: '6px'}}>
+          <button type="submit" className="btn btn-accent btn-full" style={{marginTop: '6px'}}>
             Sign In →
           </button>
         </form>
