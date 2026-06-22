@@ -33,6 +33,20 @@ export const useStartupDetails = (id) => {
   });
 };
 
+export const useSavedStartups = () => {
+  const user = useAuthStore(state => state.user);
+
+  return useQuery({
+    queryKey: ['savedStartups', user?.id],
+    queryFn: async () => {
+      await delay(400);
+      const data = getStartupData();
+      return data.filter(s => (s.savedBy || []).includes(user?.id));
+    },
+    enabled: !!user?.id
+  });
+};
+
 export const useToggleSaveStartup = () => {
   const user = useAuthStore(state => state.user);
   const queryClient = useQueryClient();
@@ -62,6 +76,7 @@ export const useToggleSaveStartup = () => {
     onSuccess: (data, startupId) => {
       queryClient.invalidateQueries({ queryKey: ['allStartups'] });
       queryClient.invalidateQueries({ queryKey: ['startupDetails', startupId] });
+      queryClient.invalidateQueries({ queryKey: ['savedStartups'] });
     }
   });
 };
