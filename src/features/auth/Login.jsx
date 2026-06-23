@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { mockUsers } from '../../api/mockData';
 
@@ -81,6 +81,10 @@ const Login = () => {
         </form>
         
         <div className="terms">Test password is: <b>password</b></div>
+        <div className="terms" style={{ marginTop: '10px' }}>
+          No account?{' '}
+          <Link to="/auth/signup" style={{ color: 'var(--accent)' }}>Create one</Link>
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { LayoutDashboard, TrendingUp, Bookmark, User, Settings, LogOut, Menu, X } from 'lucide-react';
+import { useUiStore } from '../../store/uiStore';
+import { LayoutDashboard, TrendingUp, Bookmark, User, Settings, LogOut, Menu, X, Sun, Moon } from 'lucide-react';
 
 export const Sidebar = ({ open, onClose }) => {
   const { user, logout } = useAuthStore();
+  const { theme, toggleTheme } = useUiStore();
   const location = useLocation();
 
   // Close sidebar on route change (mobile)
@@ -85,6 +87,14 @@ export const Sidebar = ({ open, onClose }) => {
             <div className="sidebar-user-name">{user.name}</div>
             <div className="sidebar-user-role">{user.role}</div>
           </div>
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
         </div>
       </div>
     </>
@@ -93,6 +103,7 @@ export const Sidebar = ({ open, onClose }) => {
 
 const DashboardLayout = ({ allowedRoles = [] }) => {
   const { isAuthenticated, user } = useAuthStore();
+  const { theme, toggleTheme } = useUiStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!isAuthenticated || !user) {
@@ -117,7 +128,13 @@ const DashboardLayout = ({ allowedRoles = [] }) => {
             <Menu size={22} />
           </button>
           <span className="mobile-topnav-logo">InvestScore</span>
-          <div style={{ width: 40 }} />
+          <button
+            className="mobile-menu-btn"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
         </div>
 
         <div className="main-inner">

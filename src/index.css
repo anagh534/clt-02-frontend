@@ -71,6 +71,34 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
+   LIGHT THEME OVERRIDES
+───────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:        #f4f5f7;
+  --panel:     #ffffff;
+  --panel-2:   #f0f1f4;
+  --panel-3:   #e8eaed;
+
+  --line:      #dde0e8;
+  --line-2:    rgba(0,0,0,0.06);
+
+  --ink:       #0f1117;
+  --ink-dim:   #5e6270;
+  --ink-muted: #3a3d4a;
+  --ink-faint: #abadb8;
+
+  --accent:      #0177fb;
+  --accent-dim:  rgba(1,119,251,0.10);
+  --accent-glow: rgba(1,119,251,0.14);
+
+  --green:  #0bb85e;
+  --red:    #e51515;
+  --amber:  #d9870a;
+
+  color-scheme: light;
+}
+
+/* ─────────────────────────────────────────────────────────────
    RESET
 ───────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -152,7 +180,7 @@ input, textarea, select { font-family: var(--body); }
   text-decoration: none;
   transition: background var(--ease), color var(--ease);
 }
-.nav-link:hover   { background: rgba(255,255,255,.05); color: var(--ink) }
+.nav-link:hover   { background: var(--panel-2); color: var(--ink) }
 .nav-link.active  { background: var(--accent); color: #fff; font-weight: 600 }
 .nav-link-ic      { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0 }
 .nav-divider      { height: 1px; background: var(--line-2); margin: var(--sp-3) var(--sp-2) }
@@ -175,6 +203,19 @@ input, textarea, select { font-family: var(--body); }
 .sidebar-user       { flex: 1; min-width: 0 }
 .sidebar-user-name  { font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .sidebar-user-role  { font-size: var(--text-xs); color: var(--ink-faint); margin-top: 2px; text-transform: capitalize }
+
+.theme-toggle-btn {
+  width: 32px; height: 32px;
+  border-radius: var(--r-md);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all var(--ease);
+  flex-shrink: 0;
+}
+.theme-toggle-btn:hover { background: var(--panel-3); color: var(--ink) }
 
 /* ─────────────────────────────────────────────────────────────
    TOPBAR
@@ -1147,7 +1188,7 @@ select.input {
   .mobile-menu-btn {
     width: 40px; height: 40px;
     border-radius: var(--r-md);
-    background: rgba(255,255,255,.06);
+    background: var(--panel-2);
     border: 1px solid var(--line);
     color: var(--ink);
     display: flex; align-items: center; justify-content: center;
@@ -1155,7 +1196,7 @@ select.input {
     transition: all var(--ease);
     flex-shrink: 0;
   }
-  .mobile-menu-btn:hover { background: rgba(255,255,255,.10) }
+  .mobile-menu-btn:hover { background: var(--panel-3) }
   .mobile-topnav-logo {
     font-family: var(--display);
     font-size: 18px;

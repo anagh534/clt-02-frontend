@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AuthLayout from '../components/layout/AuthLayout';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Login from '../features/auth/Login';
+import Signup from '../features/auth/Signup';
 import FounderDashboard from '../features/founder/FounderDashboard';
 import FounderProfile from '../features/founder/FounderProfile';
 import ScoreForm from '../features/founder/ScoreForm';
@@ -28,6 +29,7 @@ function AppRoutes() {
       {/* Auth Flow */}
       <Route path="/auth" element={<AuthLayout />}>
         <Route path="login" element={<Login />} />
+        <Route path="signup" element={<Signup />} />
       </Route>
 
       {/* Founder Flow */}
