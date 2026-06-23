@@ -78,10 +78,10 @@ const ScoreForm = () => {
 
   return (
     <>
-      <div className="topbar">
+      <div className="page-head">
         <div>
-          <div className="topbar-title">Build your score</div>
-          <div className="topbar-sub">Answer a few questions to calculate your InvestScore.</div>
+          <div className="page-head-title">Build your score</div>
+          <div className="page-head-sub">Answer a few questions to calculate your InvestScore.</div>
         </div>
       </div>
 

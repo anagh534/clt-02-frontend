@@ -15,17 +15,6 @@ const DealFeed = () => {
 
   return (
     <>
-      <div className="topbar">
-        <div>
-          <div className="topbar-title"><span className="dim">Welcome,</span> <strong>{user?.name?.split(' ')[0]}</strong></div>
-          <div className="topbar-sub">{filteredStartups?.length} new matches today</div>
-        </div>
-        <div className="topbar-actions">
-          <div className="icon-btn">⌕</div>
-          <div className="icon-btn">🔔</div>
-        </div>
-      </div>
-      
       <div className="feed-toolbar">
         <div className="feed-toolbar-l">Showing <b>{filteredStartups?.length} startups</b> · sorted by score</div>
         <div className="feed-toolbar-r">FINTECH · CLIMATE · HEALTH</div>

@@ -13,10 +13,10 @@ const FounderDashboard = () => {
   if (!startup || !startup.score) {
     return (
       <>
-        <div className="topbar">
+        <div className="page-head">
           <div>
-            <div className="topbar-title"><span className="dim">Welcome,</span> <strong>{user?.name?.split(' ')[0]}</strong></div>
-            <div className="topbar-sub">Let's get you set up.</div>
+            <div className="page-head-title">Welcome, {user?.name?.split(' ')[0]}</div>
+            <div className="page-head-sub">Let's get you set up.</div>
           </div>
         </div>
         <div className="card" style={{textAlign: 'center', padding: '60px 20px'}}>
@@ -32,12 +32,12 @@ const FounderDashboard = () => {
 
   return (
     <>
-      <div className="topbar">
+      <div className="page-head">
         <div>
-          <div className="topbar-title"><span className="dim">Dashboard</span></div>
-          <div className="topbar-sub">{startup.name} · {startup.stage} · Last updated today</div>
+          <div className="page-head-title">Dashboard</div>
+          <div className="page-head-sub">{startup.name} · {startup.stage} · Last updated today</div>
         </div>
-        <div className="topbar-actions">
+        <div className="page-head-actions">
           <Link to="/founder/onboarding" className="btn btn-accent btn-sm">✎ Update Metrics</Link>
         </div>
       </div>

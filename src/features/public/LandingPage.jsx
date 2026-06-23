@@ -187,7 +187,7 @@ const LandingPage = () => {
             <div className="fvc-startup-card">
               {/* card header */}
               <div className="fvc-sc-head">
-                <div className="fvc-sc-logo" style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>L</div>
+                <div className="fvc-sc-logo" style={{ background: 'linear-gradient(135deg,#F5D76E,#D4AF37)', color: '#080808' }}>L</div>
                 <div className="fvc-sc-info">
                   <div className="fvc-sc-name">Lumen Health</div>
                   <div className="fvc-sc-meta">Healthtech · Seed</div>

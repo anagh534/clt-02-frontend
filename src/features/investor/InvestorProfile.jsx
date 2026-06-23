@@ -35,12 +35,12 @@ const InvestorProfile = () => {
 
   return (
     <>
-      <div className="topbar">
+      <div className="page-head">
         <div>
-          <div className="topbar-title">My Profile</div>
-          <div className="topbar-sub">Your public investor page</div>
+          <div className="page-head-title">My Profile</div>
+          <div className="page-head-sub">Your public investor page</div>
         </div>
-        <div className="topbar-actions">
+        <div className="page-head-actions">
           <button className="prof-share-btn" onClick={handleShare}>
             <Share2 size={16} />
             Share Profile

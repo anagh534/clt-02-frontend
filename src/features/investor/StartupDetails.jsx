@@ -187,18 +187,17 @@ const StartupDetails = () => {
 
   return (
     <>
-      <div className="topbar">
+      <div className="page-head">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button className="icon-btn" onClick={() => navigate(-1)} style={{ fontSize: '18px' }}>
+          <button className="icon-btn" onClick={() => navigate(-1)}>
             <ArrowLeft size={18} />
           </button>
           <div>
-            <div className="topbar-title">{startup.name}</div>
-            <div className="topbar-sub">Back to feed</div>
+            <div className="page-head-title">{startup.name}</div>
+            <div className="page-head-sub">Back to feed</div>
           </div>
         </div>
-        <div className="topbar-actions">
-          {/* Investor score button */}
+        <div className="page-head-actions">
           <button
             className={`iscore-trigger-btn${myScore ? ' has-score' : ''}`}
             onClick={() => setShowScorePanel(true)}

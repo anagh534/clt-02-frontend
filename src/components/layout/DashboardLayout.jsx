@@ -119,8 +119,8 @@ const DashboardLayout = ({ allowedRoles = [] }) => {
         {/* Sticky page topbar — desktop */}
         <div className="page-topbar">
           <div className="page-topbar-left">
-            <div>
-              <div className="page-topbar-title">Welcome, {user.name.split(' ')[0]}</div>
+            <div className="page-topbar-title">
+              <span style={{ color: 'var(--accent)' }}>◆</span> InvestScore
             </div>
           </div>
           <div className="page-topbar-right">

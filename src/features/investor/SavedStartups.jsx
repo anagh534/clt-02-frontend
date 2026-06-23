@@ -9,13 +9,6 @@ const SavedStartups = () => {
 
   return (
     <>
-      <div className="topbar">
-        <div>
-          <div className="topbar-title">Your shortlist</div>
-          <div className="topbar-sub">{savedStartups?.length || 0} startups · updated live</div>
-        </div>
-      </div>
-
       {(!savedStartups || savedStartups.length === 0) ? (
         <div className="card" style={{ textAlign: 'center', padding: '60px 20px' }}>
           <div className="card-h">No startups saved yet</div>
