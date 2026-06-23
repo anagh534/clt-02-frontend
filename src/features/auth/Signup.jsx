@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { TrendingUp, Briefcase } from 'lucide-react';
 
 const generateId = () => 'u' + Math.random().toString(36).slice(2, 9);
 
@@ -69,11 +70,11 @@ const Signup = () => {
             <label className="input-lbl">I am a…</label>
             <div className="role-pick">
               <div className={`role-pill ${role === 'founder' ? 'selected' : ''}`} onClick={() => setRole('founder')}>
-                <div className="role-pill-ic">🚀</div>
+                <div className="role-pill-ic"><TrendingUp size={22} /></div>
                 <div className="role-pill-name">Founder</div>
               </div>
               <div className={`role-pill ${role === 'investor' ? 'selected' : ''}`} onClick={() => setRole('investor')}>
-                <div className="role-pill-ic">💼</div>
+                <div className="role-pill-ic"><Briefcase size={22} /></div>
                 <div className="role-pill-name">Investor</div>
               </div>
             </div>

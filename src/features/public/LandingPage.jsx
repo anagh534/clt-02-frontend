@@ -1,33 +1,33 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, ChevronUp, TrendingUp, Shield, Zap, Star, BarChart2, Users } from 'lucide-react';
+import {
+  ChevronDown, ChevronUp, TrendingUp, Shield, Zap, Star,
+  BarChart2, Users, Check, ArrowRight, Brain, Shuffle,
+  LineChart, Share2, Globe, Lock,
+} from 'lucide-react';
 
-const NAV_LINKS = [
-  { label: 'How it works', href: '#how-it-works' },
-  { label: 'For Founders', href: '#founders' },
-  { label: 'For Investors', href: '#investors' },
-  { label: 'FAQ', href: '#faq' },
+/* ── Data ─────────────────────────────────────────────────── */
+const FEATURES = [
+  { icon: <Brain size={20} />, label: 'Free', title: 'AI Startup Score', desc: '100-point score across 6 categories so investors see you clearly.' },
+  { icon: <Shuffle size={20} />, label: 'Free', title: 'AI Investor Matching', desc: 'Matched to investors whose thesis fits your stage and sector.' },
+  { icon: <LineChart size={20} />, label: 'Fund OS', title: 'Deal Flow Intelligence', desc: 'Investment memos and deal-flow analytics in one place.' },
+  { icon: <Share2 size={20} />, label: 'Free', title: 'Share & invite', desc: 'Share your fundraise profile with a single verified link.' },
+  { icon: <Globe size={20} />, label: 'Fund OS', title: 'Global infrastructure', desc: 'Operate across 150+ countries with built-in compliance.' },
+  { icon: <Lock size={20} />, label: 'Fund OS', title: 'Bank-grade security', desc: 'SOC 2 ready · GDPR compliant · end-to-end encrypted.' },
 ];
 
-const STEPS = [
-  {
-    number: '01',
-    icon: <TrendingUp size={24} />,
-    title: 'Fill your profile',
-    desc: 'Answer 4 short steps about your startup — stage, metrics, team, and traction. Takes under 5 minutes.',
-  },
-  {
-    number: '02',
-    icon: <BarChart2 size={24} />,
-    title: 'Get your InvestScore',
-    desc: 'Our algorithm weighs 10+ signals to produce a single, investor-ready score from 0 – 100.',
-  },
-  {
-    number: '03',
-    icon: <Users size={24} />,
-    title: 'Connect with investors',
-    desc: 'Share your verified profile URL. Investors shortlist you, add private notes, and reach out directly.',
-  },
+const FOUNDER_STEPS = [
+  { n: '01', title: 'Create your profile', desc: 'Answer 4 short sections about your startup — stage, metrics, team, and traction. Takes under 10 minutes.' },
+  { n: '02', title: 'Get your AI Score', desc: 'Our algorithm weighs 10+ signals to produce a single, investor-ready 100-point breakdown.' },
+  { n: '03', title: 'Share with investors', desc: 'Publish your profile. Investors are alerted when you match their thesis.' },
+  { n: '04', title: 'Close your round', desc: 'Manage your pipeline, track interest, and close with full visibility.' },
+];
+
+const INVESTOR_STEPS = [
+  { n: '01', title: 'Set your thesis', desc: 'Define your focus: sector, stage, check size, and geography.' },
+  { n: '02', title: 'Get matched deals', desc: 'AI surfaces startups that fit your criteria — scored and verified.' },
+  { n: '03', title: 'Score & track', desc: 'Add your private conviction score and notes on every startup.' },
+  { n: '04', title: 'Move fast', desc: 'Signal interest directly. Founders see your intent immediately.' },
 ];
 
 const FOUNDER_BULLETS = [
@@ -48,256 +48,399 @@ const INVESTOR_BULLETS = [
 
 const STATS = [
   { value: '2,400+', label: 'Founders scored' },
-  { value: '380+', label: 'Active investors' },
+  { value: '380+',   label: 'Active investors' },
   { value: '$120M+', label: 'Capital connected' },
-  { value: '68%', label: 'Response rate' },
+  { value: '68%',    label: 'Response rate' },
+];
+
+const PRICING = [
+  {
+    name: 'Free',
+    price: '$0',
+    sub: '/month',
+    desc: 'Everything a founder needs to get started.',
+    cta: 'Start fundraising — it\'s free',
+    ctaStyle: 'outline',
+    features: [
+      '1 active round',
+      '1 AI Startup Score',
+      'Investor matching',
+      'Shareable profile link',
+      'Basic analytics',
+    ],
+  },
+  {
+    name: 'Fundraise OS',
+    price: '$49',
+    sub: '/month',
+    desc: 'Full fundraising infrastructure for serious rounds.',
+    cta: 'Get started',
+    ctaStyle: 'accent',
+    highlight: true,
+    features: [
+      '1 active round',
+      '5 AI Startup Scores',
+      'Unlimited pipeline tracking',
+      'Deal-flow analytics',
+      'Priority investor matching',
+      'Bank-grade security',
+    ],
+  },
 ];
 
 const FAQS = [
-  {
-    q: 'How is the InvestScore calculated?',
-    a: 'The score weighs stage, ARR, growth rate, customer count, founder background, and profile completeness — producing a single 0–100 signal. The algorithm is transparent: you can see exactly which inputs drive each point.',
-  },
-  {
-    q: 'Can I update my score after submitting?',
-    a: 'Yes. Return to the scoring form any time and re-submit with updated metrics. Your score recalculates instantly and your profile reflects the new number.',
-  },
-  {
-    q: 'Is my data visible to everyone?',
-    a: "Your public profile shows your score, stage, sector, and tagline. Sensitive metrics like exact ARR are only shared when you choose. Investors' private scores and notes on your startup are never visible to you.",
-  },
-  {
-    q: 'Is InvestScore free to use?',
-    a: 'Yes — creating a profile and getting your score is completely free. We charge investors for deal-flow access beyond the free tier.',
-  },
-  {
-    q: 'How do investors verify a startup profile?',
-    a: "Founders with a completed profile receive a verified badge. Investors can also request data rooms directly through the platform, which are handled outside InvestScore's core flow.",
-  },
+  { q: 'How is the InvestScore calculated?', a: 'The score weighs stage, ARR, growth rate, customer count, founder background, and profile completeness — producing a single 0–100 signal. The algorithm is transparent: you can see exactly which inputs drive each point.' },
+  { q: 'Can I update my score after submitting?', a: 'Yes. Return to the scoring form any time and re-submit with updated metrics. Your score recalculates instantly and your profile reflects the new number.' },
+  { q: 'Is my data visible to everyone?', a: 'Your public profile shows your score, stage, sector, and tagline. Sensitive metrics like exact ARR are only shared when you choose. Investors\' private scores and notes on your startup are never visible to you.' },
+  { q: 'Is InvestScore free to use?', a: 'Yes — creating a profile and getting your score is completely free. We charge investors for deal-flow access beyond the free tier.' },
+  { q: 'How do investors verify a startup profile?', a: 'Founders with a completed profile receive a verified badge. Investors can also request data rooms directly through the platform.' },
 ];
 
+/* ── Sub-components ───────────────────────────────────────── */
 const FaqItem = ({ q, a }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`lp-faq-item${open ? ' open' : ''}`}>
-      <button className="lp-faq-q" onClick={() => setOpen(o => !o)}>
+    <div className="fvc-faq-item">
+      <button className="fvc-faq-q" onClick={() => setOpen(o => !o)}>
         <span>{q}</span>
-        {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
       </button>
-      {open && <div className="lp-faq-a">{a}</div>}
+      {open && <div className="fvc-faq-a">{a}</div>}
     </div>
   );
 };
 
+const HowItWorksTab = ({ steps }) => (
+  <div className="fvc-steps">
+    {steps.map(s => (
+      <div className="fvc-step" key={s.n}>
+        <div className="fvc-step-n">{s.n}</div>
+        <div className="fvc-step-body">
+          <div className="fvc-step-title">{s.title}</div>
+          <div className="fvc-step-desc">{s.desc}</div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+/* ── Main Component ───────────────────────────────────────── */
 const LandingPage = () => {
+  const [tab, setTab] = useState('founders');
+
   return (
-    <div className="lp-root">
-      {/* NAV */}
-      <nav className="lp-nav">
-        <div className="lp-nav-inner">
-          <Link to="/" className="lp-logo">InvestScore</Link>
-          <div className="lp-nav-links">
-            {NAV_LINKS.map(l => (
-              <a key={l.label} href={l.href} className="lp-nav-link">{l.label}</a>
-            ))}
+    <div className="fvc-root">
+
+      {/* ── NAV ─────────────────────────────────────────────── */}
+      <nav className="fvc-nav">
+        <div className="fvc-nav-inner">
+          <Link to="/" className="fvc-logo">
+            <span className="fvc-logo-mark">◆</span>
+            InvestScore
+          </Link>
+          <div className="fvc-nav-links">
+            <a href="#features" className="fvc-nav-link">Product</a>
+            <a href="#pricing"  className="fvc-nav-link">Pricing</a>
+            <a href="#faq"      className="fvc-nav-link">About</a>
           </div>
-          <div className="lp-nav-ctas">
-            <Link to="/auth/login" className="btn btn-ghost lp-nav-signin">Sign In</Link>
-            <Link to="/auth/login" className="btn btn-accent lp-nav-cta">Get My Score →</Link>
+          <div className="fvc-nav-ctas">
+            <Link to="/auth/login"  className="fvc-nav-login">Log in</Link>
+            <Link to="/auth/signup" className="fvc-nav-cta">Get started free</Link>
           </div>
         </div>
       </nav>
 
-      {/* HERO */}
-      <section className="lp-hero">
-        <div className="lp-hero-inner">
-          <div className="lp-hero-copy">
-            <div className="lp-eyebrow">
-              <Zap size={13} />
-              <span>The investor-readiness score for ambitious founders</span>
+      {/* ── HERO ────────────────────────────────────────────── */}
+      <section className="fvc-hero">
+        <div className="fvc-hero-inner">
+
+          {/* Left copy */}
+          <div className="fvc-hero-copy">
+            <div className="fvc-eyebrow">
+              <Zap size={12} />
+              AI-powered fundraising infrastructure
             </div>
-            <h1 className="lp-h1">
-              Know exactly how<br />
-              investors see your<br />
-              <span className="lp-h1-accent">startup</span>
+            <h1 className="fvc-h1">
+              Where the world's best startups meet the capital they deserve
             </h1>
-            <p className="lp-hero-sub">
-              InvestScore turns your traction, team, and metrics into a single
-              verified score — so you walk into every meeting already ahead.
+            <p className="fvc-hero-sub">
+              InvestScore connects founders and investors through AI-powered matching,
+              transparent deal flow, and institutional-grade infrastructure.
             </p>
-            <div className="lp-hero-btns">
-              <Link to="/auth/login" className="btn btn-accent lp-hero-cta">Get My Free Score</Link>
-              <a href="#how-it-works" className="btn btn-ghost">See how it works</a>
+            <div className="fvc-hero-btns">
+              <Link to="/auth/signup?role=founder" className="fvc-btn-primary">
+                Start fundraising — it's free
+              </Link>
+              <Link to="/auth/signup?role=investor" className="fvc-btn-secondary">
+                I'm an investor
+              </Link>
             </div>
-            <div className="lp-trust">
-              <div className="lp-trust-avatars">
-                {['A', 'B', 'C', 'D'].map((l, i) => (
-                  <div key={i} className="lp-trust-av">{l}</div>
-                ))}
-              </div>
-              <span className="lp-trust-text">Joined by <strong>2,400+ founders</strong> this year</span>
+            <div className="fvc-hero-badges">
+              <span className="fvc-badge"><Check size={11} /> Free for founders</span>
+              <span className="fvc-badge"><Check size={11} /> AI Startup Score</span>
+              <span className="fvc-badge"><Check size={11} /> Investor matching</span>
             </div>
           </div>
 
-          <div className="lp-hero-card">
-            <div className="lp-score-card">
-              <div className="lp-score-card-head">
-                <div className="lp-score-card-logo">T</div>
-                <div>
-                  <div className="lp-score-card-name">TechFlow AI</div>
-                  <div className="lp-score-card-tag">SaaS · Series A</div>
+          {/* Right card — Lumen Health mock */}
+          <div className="fvc-hero-card">
+            <div className="fvc-startup-card">
+              {/* card header */}
+              <div className="fvc-sc-head">
+                <div className="fvc-sc-logo" style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>L</div>
+                <div className="fvc-sc-info">
+                  <div className="fvc-sc-name">Lumen Health</div>
+                  <div className="fvc-sc-meta">Healthtech · Seed</div>
                 </div>
-                <div className="lp-score-card-badge">✓ Verified</div>
-              </div>
-              <div className="lp-score-ring-wrap">
-                <div className="lp-score-ring">
-                  <span className="lp-score-num">87</span>
-                  <span className="lp-score-label">InvestScore</span>
+                <div className="fvc-sc-score-wrap">
+                  <div className="fvc-sc-score">72</div>
+                  <div className="fvc-sc-score-lbl">Score</div>
                 </div>
               </div>
-              <div className="lp-score-bars">
-                {[
-                  { name: 'Financial Health', val: 92 },
-                  { name: 'Team', val: 88 },
-                  { name: 'Traction', val: 81 },
-                  { name: 'Market', val: 79 },
-                ].map(b => (
-                  <div className="lp-score-bar-row" key={b.name}>
-                    <div className="lp-score-bar-head">
-                      <span>{b.name}</span><span>{b.val}</span>
-                    </div>
-                    <div className="lp-score-bar-track">
-                      <div className="lp-score-bar-fill" style={{ width: `${b.val}%` }} />
-                    </div>
-                  </div>
-                ))}
+
+              {/* metrics row */}
+              <div className="fvc-sc-metrics">
+                <div className="fvc-sc-metric">
+                  <div className="fvc-sc-metric-lbl">MRR</div>
+                  <div className="fvc-sc-metric-val">$45,000</div>
+                </div>
+                <div className="fvc-sc-metric">
+                  <div className="fvc-sc-metric-lbl">Runway</div>
+                  <div className="fvc-sc-metric-val">18 mo</div>
+                </div>
+                <div className="fvc-sc-metric">
+                  <div className="fvc-sc-metric-lbl">Round</div>
+                  <div className="fvc-sc-metric-val">$500K SAFE</div>
+                </div>
+              </div>
+
+              {/* investors matched */}
+              <div className="fvc-sc-footer">
+                <div className="fvc-sc-avatars">
+                  {['JD','SK','MR'].map(i => (
+                    <div className="fvc-sc-av" key={i}>{i}</div>
+                  ))}
+                </div>
+                <div className="fvc-sc-matched">3 investors matched</div>
+                <div className="fvc-sc-signal">3 signalled</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="lp-section" id="how-it-works">
-        <div className="lp-section-inner">
-          <div className="lp-section-head">
-            <div className="lp-eyebrow"><span>How it works</span></div>
-            <h2 className="lp-h2">Score in under 5 minutes</h2>
-            <p className="lp-section-sub">Three steps to a verified investor-ready profile.</p>
+      {/* ── FEATURES ────────────────────────────────────────── */}
+      <section className="fvc-section" id="features">
+        <div className="fvc-section-inner">
+          <div className="fvc-section-head">
+            <div className="fvc-eyebrow">Features</div>
+            <h2 className="fvc-h2">Everything you need to raise</h2>
+            <p className="fvc-section-sub">
+              Built for both sides of the table — from your first score to your final close.
+            </p>
           </div>
-          <div className="lp-steps">
-            {STEPS.map(s => (
-              <div className="lp-step" key={s.number}>
-                <div className="lp-step-num">{s.number}</div>
-                <div className="lp-step-icon">{s.icon}</div>
-                <div className="lp-step-title">{s.title}</div>
-                <div className="lp-step-desc">{s.desc}</div>
+          <div className="fvc-features-grid">
+            {FEATURES.map(f => (
+              <div className="fvc-feature-card" key={f.title}>
+                <div className="fvc-feature-top">
+                  <div className="fvc-feature-icon">{f.icon}</div>
+                  <span className="fvc-feature-label">{f.label}</span>
+                </div>
+                <div className="fvc-feature-title">{f.title}</div>
+                <div className="fvc-feature-desc">{f.desc}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* AUDIENCE CARDS */}
-      <section className="lp-section lp-audience-section" id="founders">
-        <div className="lp-section-inner">
-          <div className="lp-section-head">
-            <h2 className="lp-h2">Built for both sides of the table</h2>
+      {/* ── HOW IT WORKS ────────────────────────────────────── */}
+      <section className="fvc-section fvc-hiw-section" id="how-it-works">
+        <div className="fvc-section-inner">
+          <div className="fvc-section-head">
+            <div className="fvc-eyebrow">How it works</div>
+            <h2 className="fvc-h2">From profile to close</h2>
+            <p className="fvc-section-sub">Four steps — for founders and investors alike.</p>
           </div>
-          <div className="lp-audience-grid" id="investors">
-            <div className="lp-audience-card">
-              <div className="lp-audience-icon">
-                <TrendingUp size={22} />
+
+          {/* tabs */}
+          <div className="fvc-tabs">
+            <button
+              className={`fvc-tab${tab === 'founders' ? ' active' : ''}`}
+              onClick={() => setTab('founders')}
+            >
+              <TrendingUp size={15} /> For Founders
+            </button>
+            <button
+              className={`fvc-tab${tab === 'investors' ? ' active' : ''}`}
+              onClick={() => setTab('investors')}
+            >
+              <BarChart2 size={15} /> For Investors
+            </button>
+          </div>
+
+          {tab === 'founders'
+            ? <HowItWorksTab steps={FOUNDER_STEPS} />
+            : <HowItWorksTab steps={INVESTOR_STEPS} />
+          }
+        </div>
+      </section>
+
+      {/* ── AUDIENCE ────────────────────────────────────────── */}
+      <section className="fvc-section fvc-audience-section" id="audience">
+        <div className="fvc-section-inner">
+          <div className="fvc-audience-grid">
+            {/* Founders */}
+            <div className="fvc-audience-card">
+              <div className="fvc-audience-icon fvc-audience-icon-blue">
+                <TrendingUp size={20} />
               </div>
-              <div className="lp-audience-role">For Founders</div>
-              <div className="lp-audience-title">Stop guessing what investors think</div>
-              <ul className="lp-audience-list">
+              <div className="fvc-audience-role">For Founders</div>
+              <div className="fvc-audience-title">Stop guessing what investors think</div>
+              <ul className="fvc-audience-list">
                 {FOUNDER_BULLETS.map(b => (
-                  <li key={b}>
-                    <span className="lp-check">✓</span>{b}
-                  </li>
+                  <li key={b}><Check size={14} className="fvc-check" />{b}</li>
                 ))}
               </ul>
-              <Link to="/auth/login" className="btn btn-accent btn-full lp-audience-cta">
-                Get My Score →
+              <Link to="/auth/signup" className="fvc-btn-primary fvc-btn-full">
+                Get My Score <ArrowRight size={15} />
               </Link>
             </div>
 
-            <div className="lp-audience-card lp-audience-card-alt">
-              <div className="lp-audience-icon lp-audience-icon-alt">
-                <Shield size={22} />
+            {/* Investors */}
+            <div className="fvc-audience-card fvc-audience-card-dark">
+              <div className="fvc-audience-icon fvc-audience-icon-green">
+                <Shield size={20} />
               </div>
-              <div className="lp-audience-role lp-audience-role-alt">For Investors</div>
-              <div className="lp-audience-title">Discover scored, verified deal flow</div>
-              <ul className="lp-audience-list">
+              <div className="fvc-audience-role fvc-audience-role-green">For Investors</div>
+              <div className="fvc-audience-title">Discover scored, verified deal flow</div>
+              <ul className="fvc-audience-list">
                 {INVESTOR_BULLETS.map(b => (
-                  <li key={b}>
-                    <span className="lp-check lp-check-alt">✓</span>{b}
-                  </li>
+                  <li key={b}><Check size={14} className="fvc-check fvc-check-green" />{b}</li>
                 ))}
               </ul>
-              <Link to="/auth/login" className="btn btn-outline btn-full lp-audience-cta">
-                Explore Deal Flow →
+              <Link to="/auth/login" className="fvc-btn-outline fvc-btn-full">
+                Explore Deal Flow <ArrowRight size={15} />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* STATS */}
-      <section className="lp-stats-strip">
-        <div className="lp-stats-inner">
+      {/* ── STATS ───────────────────────────────────────────── */}
+      <div className="fvc-stats-strip">
+        <div className="fvc-stats-inner">
           {STATS.map(s => (
-            <div className="lp-stat" key={s.label}>
-              <div className="lp-stat-val">{s.value}</div>
-              <div className="lp-stat-lbl">{s.label}</div>
+            <div className="fvc-stat" key={s.label}>
+              <div className="fvc-stat-val">{s.value}</div>
+              <div className="fvc-stat-lbl">{s.label}</div>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ── PRICING ─────────────────────────────────────────── */}
+      <section className="fvc-section" id="pricing">
+        <div className="fvc-section-inner">
+          <div className="fvc-section-head">
+            <div className="fvc-eyebrow">Pricing</div>
+            <h2 className="fvc-h2">Simple, transparent pricing</h2>
+            <p className="fvc-section-sub">Free forever for founders. Powerful tools for those who need more.</p>
+          </div>
+          <div className="fvc-pricing-grid">
+            {PRICING.map(p => (
+              <div key={p.name} className={`fvc-pricing-card${p.highlight ? ' fvc-pricing-card-hl' : ''}`}>
+                {p.highlight && <div className="fvc-pricing-popular">Most popular</div>}
+                <div className="fvc-pricing-name">{p.name}</div>
+                <div className="fvc-pricing-price">
+                  <span className="fvc-pricing-amount">{p.price}</span>
+                  <span className="fvc-pricing-sub">{p.sub}</span>
+                </div>
+                <div className="fvc-pricing-desc">{p.desc}</div>
+                <ul className="fvc-pricing-features">
+                  {p.features.map(f => (
+                    <li key={f}><Check size={14} className="fvc-check" />{f}</li>
+                  ))}
+                </ul>
+                <Link
+                  to="/auth/signup"
+                  className={p.ctaStyle === 'accent' ? 'fvc-btn-primary fvc-btn-full' : 'fvc-btn-outline fvc-btn-full'}
+                >
+                  {p.cta}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* FAQ */}
-      <section className="lp-section" id="faq">
-        <div className="lp-section-inner lp-faq-section">
-          <div className="lp-section-head">
-            <div className="lp-eyebrow"><span>FAQ</span></div>
-            <h2 className="lp-h2">Common questions</h2>
+      {/* ── FAQ ─────────────────────────────────────────────── */}
+      <section className="fvc-section" id="faq">
+        <div className="fvc-section-inner">
+          <div className="fvc-section-head">
+            <div className="fvc-eyebrow">FAQ</div>
+            <h2 className="fvc-h2">Common questions</h2>
           </div>
-          <div className="lp-faq-list">
+          <div className="fvc-faq-list">
             {FAQS.map(f => <FaqItem key={f.q} {...f} />)}
           </div>
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section className="lp-final-cta">
-        <div className="lp-final-cta-inner">
-          <div className="lp-final-star"><Star size={32} fill="currentColor" /></div>
-          <h2 className="lp-h2">Ready to know your score?</h2>
-          <p className="lp-final-sub">
+      {/* ── FINAL CTA ───────────────────────────────────────── */}
+      <section className="fvc-final-cta">
+        <div className="fvc-final-inner">
+          <h2 className="fvc-h2">Built for Founders.<br />Engineered for Investors.</h2>
+          <p className="fvc-final-sub">
             Join 2,400+ founders who already know how investors see them.
             Free forever for founders.
           </p>
-          <Link to="/auth/login" className="btn btn-accent lp-final-btn">
-            Get My Free Score →
-          </Link>
+          <div className="fvc-final-btns">
+            <Link to="/auth/signup" className="fvc-btn-primary">
+              Start fundraising — it's free
+            </Link>
+            <Link to="/auth/login" className="fvc-btn-ghost">
+              Log in
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="lp-footer">
-        <div className="lp-footer-inner">
-          <div className="lp-footer-left">
-            <div className="lp-logo lp-footer-logo">InvestScore</div>
-            <div className="lp-footer-copy">© 2026 InvestScore. All rights reserved.</div>
+      {/* ── FOOTER ──────────────────────────────────────────── */}
+      <footer className="fvc-footer">
+        <div className="fvc-footer-inner">
+          <div className="fvc-footer-brand">
+            <div className="fvc-logo fvc-footer-logo">
+              <span className="fvc-logo-mark">◆</span>InvestScore
+            </div>
+            <div className="fvc-footer-tagline">Built for Founders. Engineered for Investors.</div>
+            <div className="fvc-footer-copy">© 2026 InvestScore Inc. — DE C-Corp</div>
           </div>
-          <div className="lp-footer-links">
-            <a href="#how-it-works" className="lp-footer-link">How it works</a>
-            <a href="#faq" className="lp-footer-link">FAQ</a>
-            <Link to="/auth/login" className="lp-footer-link">Sign in</Link>
+          <div className="fvc-footer-cols">
+            <div className="fvc-footer-col">
+              <div className="fvc-footer-col-h">Product</div>
+              <a href="#features"    className="fvc-footer-link">Features</a>
+              <a href="#pricing"     className="fvc-footer-link">Pricing</a>
+              <a href="#audience"    className="fvc-footer-link">For founders</a>
+              <a href="#audience"    className="fvc-footer-link">For investors</a>
+            </div>
+            <div className="fvc-footer-col">
+              <div className="fvc-footer-col-h">Company</div>
+              <a href="#faq"         className="fvc-footer-link">About</a>
+              <a href="#faq"         className="fvc-footer-link">Blog</a>
+              <a href="#faq"         className="fvc-footer-link">Careers</a>
+              <a href="#faq"         className="fvc-footer-link">Contact</a>
+            </div>
+            <div className="fvc-footer-col">
+              <div className="fvc-footer-col-h">Legal</div>
+              <a href="#faq"         className="fvc-footer-link">Terms</a>
+              <a href="#faq"         className="fvc-footer-link">Privacy</a>
+              <a href="#faq"         className="fvc-footer-link">Security</a>
+            </div>
           </div>
         </div>
       </footer>
+
     </div>
   );
 };
