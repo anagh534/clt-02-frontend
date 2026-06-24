@@ -1,6 +1,40 @@
 export const mockUsers = [
-  { id: 'u1', email: 'founder@example.com', password: 'password', role: 'founder', name: 'Alice Founder' },
-  { id: 'u2', email: 'investor@example.com', password: 'password', role: 'investor', name: 'Bob Investor' }
+  {
+    id: 'u1',
+    email: 'founder@example.com',
+    password: 'password',
+    role: 'founder',
+    name: 'Alice Founder',
+    title: 'CEO & Co-Founder',
+    company: 'TechFlow AI',
+    location: 'San Francisco, CA',
+    bio: 'Building the future of enterprise workflow automation with generative AI. Previously at Google and Y Combinator alumni.',
+    website: 'https://techflow.ai',
+    linkedin: 'https://linkedin.com/in/alicefounder',
+    twitter: 'https://twitter.com/alicefounder',
+    avatar: null,
+    profileSlug: 'alice-founder-u1',
+  },
+  {
+    id: 'u2',
+    email: 'investor@example.com',
+    password: 'password',
+    role: 'investor',
+    name: 'Bob Investor',
+    title: 'Partner',
+    company: 'Horizon Ventures',
+    location: 'New York, NY',
+    bio: 'Early-stage investor focused on SaaS, AI, and ClimateTech. Led 40+ investments across Seed and Series A. Former operator at Stripe.',
+    website: 'https://horizonventures.vc',
+    linkedin: 'https://linkedin.com/in/bobinvestor',
+    twitter: 'https://twitter.com/bobinvestor',
+    avatar: null,
+    profileSlug: 'bob-investor-u2',
+    focus: ['SaaS / AI', 'CleanTech', 'HealthTech'],
+    checkSize: '$250k – $2M',
+    stage: ['Pre-Seed', 'Seed', 'Series A'],
+    portfolio: 42,
+  }
 ];
 
 export const mockStartups = [

@@ -2,30 +2,34 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AuthLayout from '../components/layout/AuthLayout';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Login from '../features/auth/Login';
+import Signup from '../features/auth/Signup';
 import FounderDashboard from '../features/founder/FounderDashboard';
+import FounderProfile from '../features/founder/FounderProfile';
 import ScoreForm from '../features/founder/ScoreForm';
 import DealFeed from '../features/investor/DealFeed';
 import SavedStartups from '../features/investor/SavedStartups';
 import StartupDetails from '../features/investor/StartupDetails';
+import InvestorProfile from '../features/investor/InvestorProfile';
+import PublicProfile from '../features/public/PublicProfile';
+import LandingPage from '../features/public/LandingPage';
 
-// Placeholder components for flows
 const Placeholder = ({ title }) => (
-  <div className="card border-0 shadow-sm p-5 text-center mt-4 mx-auto" style={{maxWidth: '600px'}}>
-    <h2 className="text-muted fw-bold">{title}</h2>
-    <p>This page is currently under construction.</p>
+  <div className="card" style={{ textAlign: 'center', padding: '60px 20px', maxWidth: '480px', margin: '40px auto' }}>
+    <div className="card-h">{title}</div>
+    <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>Coming soon.</p>
   </div>
 );
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* Root Redirect */}
-      <Route path="/" element={<Navigate to="/auth/login" replace />} />
-      
+      {/* Landing Page */}
+      <Route path="/" element={<LandingPage />} />
+
       {/* Auth Flow */}
       <Route path="/auth" element={<AuthLayout />}>
         <Route path="login" element={<Login />} />
-        {/* <Route path="register" element={<Register />} /> */}
+        <Route path="signup" element={<Signup />} />
       </Route>
 
       {/* Founder Flow */}
@@ -33,8 +37,8 @@ function AppRoutes() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<FounderDashboard />} />
         <Route path="onboarding" element={<ScoreForm />} />
-        <Route path="profile" element={<Placeholder title="Public Startup Profile" />} />
-        <Route path="settings" element={<Placeholder title="Founder Settings" />} />
+        <Route path="profile" element={<FounderProfile />} />
+        <Route path="settings" element={<Placeholder title="Settings" />} />
       </Route>
 
       {/* Investor Flow */}
@@ -43,9 +47,12 @@ function AppRoutes() {
         <Route path="dashboard" element={<DealFeed />} />
         <Route path="saved" element={<SavedStartups />} />
         <Route path="startup/:id" element={<StartupDetails />} />
-        <Route path="profile" element={<Placeholder title="Investor Profile" />} />
-        <Route path="settings" element={<Placeholder title="Investor Settings" />} />
+        <Route path="profile" element={<InvestorProfile />} />
+        <Route path="settings" element={<Placeholder title="Settings" />} />
       </Route>
+
+      {/* Public profile — accessible without login */}
+      <Route path="/profile/:role/:slug" element={<PublicProfile />} />
 
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/" replace />} />

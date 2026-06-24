@@ -15,17 +15,6 @@ const DealFeed = () => {
 
   return (
     <>
-      <div className="topbar">
-        <div>
-          <div className="topbar-title">Good morning, {user?.name?.split(' ')[0]}</div>
-          <div className="topbar-sub">{filteredStartups?.length} new matches today</div>
-        </div>
-        <div className="topbar-actions">
-          <div className="icon-btn">⌕</div>
-          <div className="icon-btn">🔔</div>
-        </div>
-      </div>
-      
       <div className="feed-toolbar">
         <div className="feed-toolbar-l">Showing <b>{filteredStartups?.length} startups</b> · sorted by score</div>
         <div className="feed-toolbar-r">FINTECH · CLIMATE · HEALTH</div>
@@ -35,19 +24,20 @@ const DealFeed = () => {
         {filteredStartups?.map((startup, idx) => {
           const isSaved = startup.savedBy?.includes(user?.id);
           const isNew = idx < 2; // Mocking new tag
-          const scoreTier = startup.score >= 800 ? 'Tier A+' : startup.score >= 700 ? 'Tier A' : startup.score >= 600 ? 'Tier B' : 'Tier C';
-          const isHigh = startup.score >= 700;
+          const scoreTier = startup.score >= 90 ? 'Tier A+' : startup.score >= 80 ? 'Tier A' : startup.score >= 70 ? 'Tier B' : 'Tier C';
+          const isHigh = startup.score >= 70;
           
           return (
-            <Link to={`/investor/startup/${startup.id}`} className={`startup-card ${isNew ? 'new' : ''}`} key={startup.id}>
+            <Link to={`/investor/startup/${startup.id}`} className="startup-card" key={startup.id}>
               <div className="startup-head">
-                <div className={`startup-logo ${!isHigh ? 'b' : ''}`}>{startup.name.charAt(0)}</div>
-                <div>
+                <div className={`startup-logo${!isHigh ? ' b' : ''}`}>{startup.name.charAt(0)}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="startup-name">{startup.name} <span className="verif-mini">✓</span></div>
                   <div className="startup-sector">{startup.industry} · {startup.location}</div>
                 </div>
                 <div className="startup-score-wrap">
-                  <div className={`startup-score-num ${!isHigh ? 'b' : ''}`}>{startup.score}</div>
+                  {isNew && <span className="new-badge">NEW</span>}
+                  <div className={`startup-score-num${!isHigh ? ' b' : ''}`}>{startup.score}</div>
                   <div className="startup-score-lbl">{scoreTier}</div>
                 </div>
               </div>

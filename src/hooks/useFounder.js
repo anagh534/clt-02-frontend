@@ -38,8 +38,40 @@ export const useSaveStartupScore = () => {
       
       let updatedStartup;
       
-      // Super basic mockup of scoring algorithm based on inputs
-      const calculatedScore = Math.min(100, Math.max(30, 50 + (startupData.metrics?.arr ? 20 : 0) + (startupData.stage === 'Seed' ? 10 : 20)));
+      // Scoring algorithm — max 100
+      let score = 30; // base
+
+      // Stage
+      const stageBonus = { 'Pre-Seed': 5, 'Seed': 12, 'Series A': 18, 'Series B+': 22 };
+      score += stageBonus[startupData.stage] || 5;
+
+      // ARR / Revenue
+      const arr = (startupData.metrics?.arr || '').toLowerCase();
+      if (arr.includes('m') || parseFloat(arr.replace(/[^0-9.]/g, '')) >= 1000000) score += 18;
+      else if (parseFloat(arr.replace(/[^0-9.]/g, '')) >= 100000) score += 12;
+      else if (arr && arr !== '' && arr !== '$0') score += 6;
+
+      // Growth rate
+      const growth = parseFloat((startupData.metrics?.growth || '0').replace(/[^0-9.]/g, ''));
+      if (growth >= 20) score += 10;
+      else if (growth >= 10) score += 6;
+      else if (growth > 0) score += 3;
+
+      // Customers
+      const custMap = {
+        '0 (pre-launch)': 0, '1 – 10': 3, '11 – 100': 6,
+        '101 – 1,000': 9, '1,001 – 10,000': 12, '10,000+': 15,
+      };
+      score += custMap[startupData.customers] ?? 0;
+
+      // Founder signals
+      if (startupData.priorExit) score += 15;
+      if (startupData.technicalCofounder) score += 10;
+
+      // Completeness bonus
+      if (startupData.name && startupData.tagline && startupData.description) score += 5;
+
+      const calculatedScore = Math.min(100, Math.max(30, Math.round(score)));
       
       if (index >= 0) {
         updatedStartup = { ...data[index], ...startupData, score: calculatedScore };

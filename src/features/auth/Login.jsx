@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { mockUsers } from '../../api/mockData';
+import { TrendingUp, Briefcase } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('founder@example.com');
@@ -43,11 +44,11 @@ const Login = () => {
             <label className="input-lbl">I am a…</label>
             <div className="role-pick">
               <div className={`role-pill ${role === 'founder' ? 'selected' : ''}`} onClick={() => setRole('founder')}>
-                <div className="role-pill-ic">🚀</div>
+                <div className="role-pill-ic"><TrendingUp size={22} /></div>
                 <div className="role-pill-name">Founder</div>
               </div>
               <div className={`role-pill ${role === 'investor' ? 'selected' : ''}`} onClick={() => setRole('investor')}>
-                <div className="role-pill-ic">💼</div>
+                <div className="role-pill-ic"><Briefcase size={22} /></div>
                 <div className="role-pill-name">Investor</div>
               </div>
             </div>
@@ -75,12 +76,16 @@ const Login = () => {
             />
           </div>
           
-          <button type="submit" className="btn btn-white btn-full" style={{marginTop: '6px'}}>
+          <button type="submit" className="btn btn-accent btn-full" style={{marginTop: '6px'}}>
             Sign In →
           </button>
         </form>
         
         <div className="terms">Test password is: <b>password</b></div>
+        <div className="terms" style={{ marginTop: '10px' }}>
+          No account?{' '}
+          <Link to="/auth/signup" style={{ color: 'var(--accent)' }}>Create one</Link>
+        </div>
       </div>
     </div>
   );
