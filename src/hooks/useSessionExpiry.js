@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../store/useAuthStore'
+import { useAuthStore } from '../store/authStore';
 import { useToast } from './useToast'
 
 export function useSessionExpiry() {
