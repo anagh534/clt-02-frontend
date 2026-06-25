@@ -43,7 +43,7 @@ const InvestorProfile = () => {
         <div className="page-head-actions">
           <button className="prof-share-btn" onClick={handleShare}>
             <Share2 size={16} />
-            Share Profile
+            Share
           </button>
           <button className="prof-copy-btn" onClick={handleCopy}>
             {copied ? <Check size={16} /> : <Copy size={16} />}

@@ -1386,6 +1386,10 @@ select.input {
 ───────────────────────────────────────────────────────────── */
 .sidebar-backdrop { display: none }
 .mobile-topnav    { display: none }
+/* Desktop topbar hidden on mobile — mobile-topnav takes over */
+@media (max-width: 900px) {
+  .page-topbar { display: none; }
+}
 
 /* ─────────────────────────────────────────────────────────────
    RESPONSIVE — 1024px
@@ -1420,7 +1424,7 @@ select.input {
     backdrop-filter: blur(4px); z-index: 299;
   }
 
-  .main { margin-left: 0 }
+  .main { margin-left: 0; overflow-x: hidden }
   .main-inner { border-radius: 0; padding: var(--sp-5) var(--sp-4) var(--sp-12) }
   .page-topbar { padding: 0 var(--sp-4) }
 
@@ -1482,6 +1486,16 @@ select.input {
 
   .opt-grid-4 { grid-template-columns: repeat(2,1fr) }
   .iscore-sector-grid { grid-template-columns: repeat(2,1fr) }
+
+  /* Investor profile — tablet */
+  .page-head         { flex-wrap: wrap; gap: var(--sp-4) }
+  .page-head-actions { flex-wrap: wrap }
+  .prof-url-bar      { flex-direction: column; align-items: stretch; gap: var(--sp-3) }
+  .prof-url-label    { white-space: normal }
+  .prof-url-row      { width: 100%; box-sizing: border-box }
+  .prof-url-open     { display: none }
+  .prof-stats-row    { grid-template-columns: repeat(3,1fr) }
+  .prof-watch-row    { flex-wrap: wrap }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -1497,8 +1511,13 @@ select.input {
   .stat-row  { grid-template-columns: 1fr 1fr }
 
   .prof-metrics-grid { grid-template-columns: repeat(2,1fr) }
-  .prof-stats-row    { grid-template-columns: repeat(2,1fr) }
+  .prof-stats-row    { grid-template-columns: repeat(3,1fr) }
   .prof-layout       { margin-top: var(--sp-4) }
+  .prof-stat-card-val { font-size: 22px }
+  .prof-stat-card    { padding: var(--sp-4) var(--sp-3) }
+  .page-head-title   { font-size: var(--text-xl) }
+  .prof-share-btn, .prof-copy-btn { padding: 9px 14px; font-size: 13px }
+  .prof-watch-score  { font-size: 18px }
   .detail-stats      { grid-template-columns: repeat(2,1fr) }
   .saved-action      { display: none }
   .saved-info        { flex: 1 }
@@ -1530,6 +1549,19 @@ select.input {
   .pub-topbar { padding: var(--sp-3) var(--sp-4) }
   .pub-body   { padding: var(--sp-5) var(--sp-4) 56px }
   .pub-cta    { flex-direction: column; align-items: flex-start }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESPONSIVE — 420px  (small phones)
+───────────────────────────────────────────────────────────── */
+@media (max-width: 420px) {
+  .page-head         { flex-direction: column; align-items: flex-start }
+  .page-head-actions { width: 100%; flex-wrap: nowrap }
+  .prof-share-btn, .prof-copy-btn { flex: 1; justify-content: center; min-width: 0 }
+  .prof-stats-row    { grid-template-columns: 1fr 1fr 1fr }
+  .prof-stat-card-val { font-size: 20px }
+  .prof-watch-score  { font-size: 16px }
+  .prof-url-row      { flex-wrap: wrap; gap: var(--sp-2) }
 }
 
 /* ═══════════════════════════════════════════════════════════════
