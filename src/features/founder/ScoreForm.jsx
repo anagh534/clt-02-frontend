@@ -6,12 +6,25 @@ import Spinner from '../../components/ui/Spinner';
 const TOTAL_STEPS = 4;
 
 const SECTORS = [
-  'Fintech', 'Climate', 'AI', 'HealthTech', 'SaaS', 'Commerce', 'Agri', 'Other'
+  { label: 'Fintech', value: 'fintech' },
+  { label: 'Climate', value: 'climate' },
+  { label: 'AI', value: 'ai' },
+  { label: 'HealthTech', value: 'health' },
+  { label: 'SaaS', value: 'saas' },
+  { label: 'Commerce', value: 'commerce' },
+  { label: 'Agri', value: 'agri' },
+  { label: 'Other', value: 'other' }
 ];
 
-const CUSTOMER_RANGES = [
-  '0 (pre-launch)', '1 – 10', '11 – 100', '101 – 1,000', '1,001 – 10,000', '10,000+'
+const STAGES = [
+  { label: 'Pre-Seed', value: 'preseed' },
+  { label: 'Seed', value: 'seed' },
+  { label: 'Series A', value: 'seriesA' },
+  { label: 'Series B+', value: 'seriesB' }
 ];
+
+const CUSTOMER_OPTIONS = ['0', 'Under 10', '10–50', '50–200', 'Over 200'];
+const TEAM_SIZE_OPTIONS = ['1–3', '4–10', '11–25', '25+'];
 
 const ScoreForm = () => {
   const navigate = useNavigate();
@@ -20,28 +33,45 @@ const ScoreForm = () => {
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: '',
+    companyName: '',
     tagline: '',
-    sector: 'SaaS',
-    industry: 'SaaS',
-    stage: 'Pre-Seed',
-    location: '',
+    sector: 'saas',
+    stage: 'preseed',
+    raisingAmount: '',
+    city: '',
+    country: '',
+    logoColor: '#D4AF37',
     description: '',
-    customers: '0 (pre-launch)',
-    priorExit: false,
-    technicalCofounder: false,
-    metrics: { arr: '', growth: '', runway: '' }
+    inputs: {
+      mrr: '',
+      growth: '',
+      customers: '0',
+      retention: '',
+      teamSize: '1–3',
+      priorExit: false,
+      technicalCofounder: false,
+      runway: ''
+    }
   });
 
   useEffect(() => {
-    if (initialData) {
+    if (initialData && initialData.founder) {
+      const { founder, score } = initialData;
       setFormData(prev => ({
         ...prev,
-        ...initialData,
-        sector: initialData.sector || initialData.industry || 'SaaS',
-        customers: initialData.customers || '0 (pre-launch)',
-        priorExit: initialData.priorExit || false,
-        technicalCofounder: initialData.technicalCofounder || false,
+        companyName: founder.companyName || '',
+        tagline: founder.tagline || '',
+        sector: founder.sector || 'saas',
+        stage: founder.stage || 'preseed',
+        raisingAmount: founder.raisingAmount || '',
+        city: founder.city || '',
+        country: founder.country || '',
+        logoColor: founder.logoColor || '#D4AF37',
+        description: founder.description || '',
+        inputs: {
+          ...prev.inputs,
+          ...(score?.inputs || {})
+        }
       }));
     }
   }, [initialData]);
@@ -50,9 +80,15 @@ const ScoreForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (name.startsWith('metrics.')) {
-      const metricName = name.split('.')[1];
-      setFormData(prev => ({ ...prev, metrics: { ...prev.metrics, [metricName]: value } }));
+    if (name.startsWith('inputs.')) {
+      const fieldName = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        inputs: {
+          ...prev.inputs,
+          [fieldName]: type === 'checkbox' ? checked : value
+        }
+      }));
     } else if (type === 'checkbox') {
       setFormData(prev => ({ ...prev, [name]: checked }));
     } else {
@@ -63,13 +99,42 @@ const ScoreForm = () => {
   const handleSelect = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value,
-      ...(field === 'sector' ? { industry: value } : {}),
+      [field]: value
+    }));
+  };
+
+  const handleInputSelect = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      inputs: {
+        ...prev.inputs,
+        [field]: value
+      }
     }));
   };
 
   const handleSubmit = () => {
-    saveMutation.mutate({ ...formData, industry: formData.sector }, {
+    saveMutation.mutate({
+      companyName: formData.companyName,
+      tagline: formData.tagline,
+      sector: formData.sector,
+      stage: formData.stage,
+      raisingAmount: formData.raisingAmount ? Number(formData.raisingAmount) : undefined,
+      city: formData.city,
+      country: formData.country,
+      logoColor: formData.logoColor,
+      description: formData.description,
+      inputs: {
+        ...formData.inputs,
+        mrr: formData.inputs.mrr !== '' ? Number(formData.inputs.mrr) : 0,
+        growth: formData.inputs.growth !== '' ? Number(formData.inputs.growth) : 0,
+        retention: formData.inputs.retention !== '' ? Number(formData.inputs.retention) : 0,
+        stage: formData.stage,
+        sector: formData.sector,
+        priorExit: formData.inputs.priorExit,
+        technicalCofounder: formData.inputs.technicalCofounder
+      }
+    }, {
       onSuccess: () => navigate('/founder/dashboard')
     });
   };
@@ -98,7 +163,7 @@ const ScoreForm = () => {
 
                 <div className="input-grp">
                   <label className="input-lbl">Startup Name</label>
-                  <input className="input filled" name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Klimar Tech" />
+                  <input className="input filled" name="companyName" value={formData.companyName} onChange={handleChange} placeholder="e.g. Klimar Tech" />
                 </div>
                 <div className="input-grp">
                   <label className="input-lbl">Tagline</label>
@@ -122,7 +187,7 @@ const ScoreForm = () => {
             </>
           )}
 
-          {/* STEP 2 — Sector + Stage + Location */}
+          {/* STEP 2 — Sector + Stage + Location + Target Capital */}
           {step === 2 && (
             <>
               <div className="q-group">
@@ -131,11 +196,11 @@ const ScoreForm = () => {
                 <div className="opt-grid opt-grid-4">
                   {SECTORS.map(s => (
                     <div
-                      key={s}
-                      className={`opt${formData.sector === s ? ' selected' : ''}`}
-                      onClick={() => handleSelect('sector', s)}
+                      key={s.value}
+                      className={`opt${formData.sector === s.value ? ' selected' : ''}`}
+                      onClick={() => handleSelect('sector', s.value)}
                     >
-                      {s}
+                      {s.label}
                     </div>
                   ))}
                 </div>
@@ -145,13 +210,13 @@ const ScoreForm = () => {
                 <div className="q-label">Funding stage</div>
                 <div className="q-sub">Where are you right now?</div>
                 <div className="opt-grid">
-                  {['Pre-Seed', 'Seed', 'Series A', 'Series B+'].map(stg => (
+                  {STAGES.map(stg => (
                     <div
-                      key={stg}
-                      className={`opt${formData.stage === stg ? ' selected' : ''}`}
-                      onClick={() => handleSelect('stage', stg)}
+                      key={stg.value}
+                      className={`opt${formData.stage === stg.value ? ' selected' : ''}`}
+                      onClick={() => handleSelect('stage', stg.value)}
                     >
-                      {stg}
+                      {stg.label}
                     </div>
                   ))}
                 </div>
@@ -159,8 +224,26 @@ const ScoreForm = () => {
 
               <div className="q-group">
                 <div className="q-label">Location</div>
-                <div className="q-sub">City, Country</div>
-                <input className="input filled" name="location" value={formData.location} onChange={handleChange} placeholder="e.g. Lagos, NG" />
+                <div className="q-sub">City & Country Code</div>
+                <div className="input-grp-row" style={{ display: 'flex', gap: '12px' }}>
+                  <div className="input-grp" style={{ flex: 1 }}>
+                    <label className="input-lbl">City</label>
+                    <input className="input filled" name="city" value={formData.city} onChange={handleChange} placeholder="e.g. Lagos" />
+                  </div>
+                  <div className="input-grp" style={{ flex: 1 }}>
+                    <label className="input-lbl">Country Code</label>
+                    <input className="input filled" name="country" value={formData.country} onChange={handleChange} placeholder="e.g. NG" maxLength={2} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="q-group">
+                <div className="q-label">Raising Amount</div>
+                <div className="q-sub">Target funding size in USD</div>
+                <div className="input-grp">
+                  <label className="input-lbl">Target Amount ($)</label>
+                  <input type="number" className="input filled" name="raisingAmount" value={formData.raisingAmount} onChange={handleChange} placeholder="e.g. 500000" />
+                </div>
               </div>
 
               <div style={{ display: 'flex', gap: '12px' }}>
@@ -170,39 +253,79 @@ const ScoreForm = () => {
             </>
           )}
 
-          {/* STEP 3 — Traction: Customers + Financial Metrics */}
+          {/* STEP 3 — Traction & Financial Metrics */}
           {step === 3 && (
             <>
               <div className="q-group">
-                <div className="q-label">Customers</div>
-                <div className="q-sub">How many users / paying customers do you have?</div>
+                <div className="q-label">Financial & Traction Metrics</div>
+                <div className="q-sub">Please enter your exact metrics.</div>
+
+                <div className="input-grp">
+                  <label className="input-lbl">Monthly Revenue (MRR) - USD ($)</label>
+                  <input
+                    type="number"
+                    className="input filled"
+                    name="inputs.mrr"
+                    value={formData.inputs.mrr}
+                    onChange={handleChange}
+                    placeholder="e.g. 12500"
+                    min="0"
+                  />
+                </div>
+
+                <div className="input-grp">
+                  <label className="input-lbl">Monthly Growth Rate (%)</label>
+                  <input
+                    type="number"
+                    className="input filled"
+                    name="inputs.growth"
+                    value={formData.inputs.growth}
+                    onChange={handleChange}
+                    placeholder="e.g. 15"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                  />
+                </div>
+
+                <div className="input-grp">
+                  <label className="input-lbl">6-Month Customer Retention (%)</label>
+                  <input
+                    type="number"
+                    className="input filled"
+                    name="inputs.retention"
+                    value={formData.inputs.retention}
+                    onChange={handleChange}
+                    placeholder="e.g. 85"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                  />
+                </div>
+              </div>
+
+              <div className="q-group">
+                <div className="q-label">Customer Count</div>
+                <div className="q-sub">Number of active/paying users.</div>
                 <div className="opt-grid">
-                  {CUSTOMER_RANGES.map(r => (
+                  {CUSTOMER_OPTIONS.map(opt => (
                     <div
-                      key={r}
-                      className={`opt${formData.customers === r ? ' selected' : ''}`}
-                      onClick={() => handleSelect('customers', r)}
+                      key={opt}
+                      className={`opt${formData.inputs.customers === opt ? ' selected' : ''}`}
+                      onClick={() => handleInputSelect('customers', opt)}
                     >
-                      {r}
+                      {opt}
                     </div>
                   ))}
                 </div>
               </div>
 
               <div className="q-group">
-                <div className="q-label">Financial Metrics</div>
-                <div className="q-sub">Approximate is fine.</div>
+                <div className="q-label">Runway</div>
+                <div className="q-sub">Remaining cash runway (optional)</div>
                 <div className="input-grp">
-                  <label className="input-lbl">Current ARR / Revenue</label>
-                  <input className="input filled" name="metrics.arr" value={formData.metrics.arr} onChange={handleChange} placeholder="e.g. $48k" />
-                </div>
-                <div className="input-grp">
-                  <label className="input-lbl">Monthly Growth Rate</label>
-                  <input className="input filled" name="metrics.growth" value={formData.metrics.growth} onChange={handleChange} placeholder="e.g. 20% MoM" />
-                </div>
-                <div className="input-grp">
-                  <label className="input-lbl">Runway</label>
-                  <input className="input filled" name="metrics.runway" value={formData.metrics.runway} onChange={handleChange} placeholder="e.g. 18 months" />
+                  <label className="input-lbl">Cash Runway</label>
+                  <input className="input filled" name="inputs.runway" value={formData.inputs.runway} onChange={handleChange} placeholder="e.g. 18 months" />
                 </div>
               </div>
 
@@ -213,44 +336,58 @@ const ScoreForm = () => {
             </>
           )}
 
-          {/* STEP 4 — Founder Background */}
+          {/* STEP 4 — Team & Founder Background */}
           {step === 4 && (
             <>
+              <div className="q-group">
+                <div className="q-label">Team Size</div>
+                <div className="q-sub">Total number of full-time team members.</div>
+                <div className="opt-grid">
+                  {TEAM_SIZE_OPTIONS.map(opt => (
+                    <div
+                      key={opt}
+                      className={`opt${formData.inputs.teamSize === opt ? ' selected' : ''}`}
+                      onClick={() => handleInputSelect('teamSize', opt)}
+                    >
+                      {opt}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="q-group">
                 <div className="q-label">Founder Background</div>
                 <div className="q-sub">These signals significantly boost investor confidence.</div>
 
                 <div className="check-group">
-                  <label className={`check-opt${formData.priorExit ? ' selected' : ''}`}>
+                  <label className={`check-opt${formData.inputs.priorExit ? ' selected' : ''}`}>
                     <input
                       type="checkbox"
-                      name="priorExit"
-                      checked={formData.priorExit}
+                      name="inputs.priorExit"
+                      checked={formData.inputs.priorExit}
                       onChange={handleChange}
                       className="check-input"
                     />
-                    <div className="check-box">{formData.priorExit && <span className="check-tick">✓</span>}</div>
+                    <div className="check-box">{formData.inputs.priorExit && <span className="check-tick">✓</span>}</div>
                     <div className="check-content">
                       <div className="check-title">Prior startup exit</div>
                       <div className="check-sub">You've previously founded and exited a company (acquisition or IPO)</div>
                     </div>
-                    <div className="check-pts">+15 pts</div>
                   </label>
 
-                  <label className={`check-opt${formData.technicalCofounder ? ' selected' : ''}`}>
+                  <label className={`check-opt${formData.inputs.technicalCofounder ? ' selected' : ''}`}>
                     <input
                       type="checkbox"
-                      name="technicalCofounder"
-                      checked={formData.technicalCofounder}
+                      name="inputs.technicalCofounder"
+                      checked={formData.inputs.technicalCofounder}
                       onChange={handleChange}
                       className="check-input"
                     />
-                    <div className="check-box">{formData.technicalCofounder && <span className="check-tick">✓</span>}</div>
+                    <div className="check-box">{formData.inputs.technicalCofounder && <span className="check-tick">✓</span>}</div>
                     <div className="check-content">
                       <div className="check-title">Technical co-founder</div>
                       <div className="check-sub">At least one co-founder has strong engineering or product background</div>
                     </div>
-                    <div className="check-pts">+10 pts</div>
                   </label>
                 </div>
               </div>
@@ -283,8 +420,8 @@ const ScoreForm = () => {
               {[
                 { n: 1, label: 'Basics' },
                 { n: 2, label: 'Sector & Stage' },
-                { n: 3, label: 'Traction' },
-                { n: 4, label: 'Background' },
+                { n: 3, label: 'Traction & Financials' },
+                { n: 4, label: 'Team & Signals' },
               ].map(({ n, label }) => (
                 <div key={n} className={`form-step-item${step === n ? ' active' : step > n ? ' done' : ''}`}>
                   <div className="form-step-dot">{step > n ? '✓' : n}</div>
