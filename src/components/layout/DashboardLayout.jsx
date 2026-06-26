@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useUiStore } from '../../store/uiStore';
-import { LayoutDashboard, TrendingUp, Bookmark, User, Settings, LogOut, Menu, X, Sun, Moon, Bell, Search } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, Bookmark, User, Settings, LogOut, Menu, X, Sun, Moon, Bell, Search as SearchIcon } from 'lucide-react';
 
 export const Sidebar = ({ open, onClose }) => {
   const { user, logout } = useAuthStore();
@@ -19,6 +19,7 @@ export const Sidebar = ({ open, onClose }) => {
 
   const founderLinks = [
     { to: '/founder/dashboard',  icon: <LayoutDashboard size={17} />, label: 'Dashboard' },
+    { to: '/founder/investors',  icon: <SearchIcon size={17} />,     label: 'Investors' },
     { to: '/founder/onboarding', icon: <TrendingUp size={17} />,      label: 'Update Score' },
     { to: '/founder/profile',    icon: <User size={17} />,            label: 'Profile' },
   ];
