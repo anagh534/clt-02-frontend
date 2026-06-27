@@ -7110,3 +7110,193 @@ select.input {
   color: var(--adm-dim);
   opacity: 0.6;
 }
+
+/* ── Skeleton Loading ──────────────────────────────────────── */
+@keyframes admShimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.adm-skeleton {
+  background: linear-gradient(90deg, var(--adm-card) 25%, rgba(255,255,255,0.05) 50%, var(--adm-card) 75%);
+  background-size: 800px 100%;
+  animation: admShimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.adm-skel-text {
+  height: 12px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+.adm-skel-text-sm { height: 10px; width: 60%; }
+.adm-skel-text-lg { height: 16px; width: 80%; }
+.adm-skel-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.adm-skel-badge {
+  height: 22px;
+  width: 70px;
+  border-radius: 20px;
+  display: inline-block;
+}
+.adm-skel-btn {
+  height: 32px;
+  width: 80px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* ── Dashboard skeletons ───────────────────────────────────── */
+.adm-skel-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.adm-skel-stat {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  padding: 20px;
+}
+.adm-skel-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.adm-skel-stat-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+}
+.adm-skel-stat-trend {
+  width: 80px; height: 14px;
+}
+.adm-skel-stat-val {
+  height: 28px;
+  width: 60%;
+  margin-bottom: 8px;
+}
+
+/* ── Table skeleton ─────────────────────────────────────────── */
+.adm-skel-table {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  overflow: hidden;
+}
+.adm-skel-thead {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--adm-line);
+  display: flex;
+  gap: 16px;
+}
+.adm-skel-th {
+  height: 14px;
+  width: 80px;
+}
+.adm-skel-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--adm-line);
+}
+.adm-skel-row:last-child { border-bottom: none; }
+.adm-skel-row-check { width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; }
+.adm-skel-row-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
+.adm-skel-row-name { flex: 2; height: 13px; }
+.adm-skel-row-email { flex: 2; height: 13px; }
+.adm-skel-row-role { width: 60px; height: 22px; border-radius: 20px; flex-shrink: 0; }
+.adm-skel-row-status { width: 70px; height: 22px; border-radius: 20px; flex-shrink: 0; }
+.adm-skel-row-date { width: 90px; height: 13px; flex-shrink: 0; }
+.adm-skel-row-actions { width: 80px; height: 24px; border-radius: 4px; flex-shrink: 0; }
+
+/* ── Detail page skeletons ──────────────────────────────────── */
+.adm-skel-detail {
+  max-width: 900px;
+}
+.adm-skel-back {
+  width: 120px; height: 16px;
+  margin-bottom: 20px;
+}
+.adm-skel-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: var(--adm-card);
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  margin-bottom: 20px;
+}
+.adm-skel-hero-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.adm-skel-hero-info {
+  flex: 1;
+}
+.adm-skel-hero-name {
+  height: 22px;
+  width: 200px;
+  margin-bottom: 10px;
+}
+.adm-skel-hero-meta {
+  display: flex;
+  gap: 8px;
+}
+.adm-skel-hero-badge {
+  width: 70px; height: 22px;
+  border-radius: 20px;
+}
+.adm-skel-hero-actions {
+  display: flex;
+  gap: 8px;
+}
+.adm-skel-hero-btn {
+  width: 90px; height: 34px;
+  border-radius: 6px;
+}
+.adm-skel-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.adm-skel-card {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-line);
+  border-radius: var(--adm-radius);
+  padding: 20px;
+}
+.adm-skel-card-title {
+  height: 16px;
+  width: 160px;
+  margin-bottom: 16px;
+}
+.adm-skel-card-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.adm-skel-card-icon {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.adm-skel-card-label {
+  width: 50px; height: 11px;
+}
+.adm-skel-card-value {
+  flex: 1; height: 13px;
+}
+@media (max-width: 640px) {
+  .adm-skel-cards { grid-template-columns: 1fr; }
+  .adm-skel-hero { flex-wrap: wrap; }
+  .adm-skel-hero-actions { width: 100%; justify-content: flex-end; }
+}

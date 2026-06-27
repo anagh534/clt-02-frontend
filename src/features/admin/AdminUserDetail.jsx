@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import {
   ArrowLeft, Mail, Phone, Calendar, Shield, Ban, Trash2,
-  Edit3, X, Loader2, CheckCircle, Save, Building, Globe,
+  Edit3, X, CheckCircle, Save, Building, Globe,
   MapPin, DollarSign, Briefcase, Eye, Target, UserCheck, AlertTriangle
 } from 'lucide-react';
 
@@ -95,7 +95,48 @@ const AdminUserDetail = () => {
   );
 
   if (loading) {
-    return <div className="adm-loading-state" style={{ minHeight: 400 }}><Loader2 size={28} className="adm-spin" /><span>Loading user details...</span></div>;
+    return (
+      <div className="adm-skel-detail">
+        <div className="adm-skeleton adm-skel-back" />
+        <div className="adm-skel-hero">
+          <div className="adm-skeleton adm-skel-hero-avatar" />
+          <div className="adm-skel-hero-info">
+            <div className="adm-skeleton adm-skel-hero-name" />
+            <div className="adm-skel-hero-meta">
+              <div className="adm-skeleton adm-skel-hero-badge" />
+              <div className="adm-skeleton" style={{ width: 60, height: 22, borderRadius: 20 }} />
+            </div>
+          </div>
+          <div className="adm-skel-hero-actions">
+            <div className="adm-skeleton adm-skel-hero-btn" />
+            <div className="adm-skeleton adm-skel-hero-btn" />
+            <div className="adm-skeleton adm-skel-hero-btn" />
+          </div>
+        </div>
+        <div className="adm-skel-cards">
+          <div className="adm-skel-card">
+            <div className="adm-skeleton adm-skel-card-title" />
+            {[...Array(4)].map((_, i) => (
+              <div className="adm-skel-card-row" key={i}>
+                <div className="adm-skeleton adm-skel-card-icon" />
+                <div className="adm-skeleton adm-skel-card-label" />
+                <div className="adm-skeleton adm-skel-card-value" />
+              </div>
+            ))}
+          </div>
+          <div className="adm-skel-card">
+            <div className="adm-skeleton adm-skel-card-title" />
+            {[...Array(6)].map((_, i) => (
+              <div className="adm-skel-card-row" key={i}>
+                <div className="adm-skeleton adm-skel-card-icon" />
+                <div className="adm-skeleton adm-skel-card-label" />
+                <div className="adm-skeleton adm-skel-card-value" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error && !userData) {

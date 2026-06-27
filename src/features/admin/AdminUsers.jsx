@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import {
   Search, Users, Trash2, Ban, MoreHorizontal, ChevronLeft, ChevronRight,
-  Loader2, UserCheck, SlidersHorizontal, X, CheckSquare, Square, AlertTriangle
+  UserCheck, SlidersHorizontal, X, CheckSquare, Square, AlertTriangle
 } from 'lucide-react';
 
 const statusBadge = (user) => {
@@ -311,7 +311,29 @@ const AdminUsers = () => {
       {/* Table */}
       <div className="adm-table-wrap">
         {loading ? (
-          <div className="adm-loading-state"><Loader2 size={24} className="adm-spin" /><span>Loading users...</span></div>
+          <div className="adm-skel-table">
+            <div className="adm-skel-thead">
+              <div className="adm-skeleton" style={{ width: 16, height: 16, borderRadius: 3 }} />
+              <div className="adm-skeleton" style={{ height: 14, width: 80 }} />
+              <div className="adm-skeleton" style={{ height: 14, width: 160 }} />
+              <div className="adm-skeleton" style={{ height: 14, width: 60 }} />
+              <div className="adm-skeleton" style={{ height: 14, width: 70 }} />
+              <div className="adm-skeleton" style={{ height: 14, width: 90 }} />
+              <div className="adm-skeleton" style={{ height: 14, width: 100 }} />
+            </div>
+            {[...Array(8)].map((_, i) => (
+              <div className="adm-skel-row" key={i}>
+                <div className="adm-skeleton adm-skel-row-check" />
+                <div className="adm-skeleton adm-skel-row-avatar" />
+                <div className="adm-skeleton adm-skel-row-name" />
+                <div className="adm-skeleton adm-skel-row-email" />
+                <div className="adm-skeleton adm-skel-row-role" />
+                <div className="adm-skeleton adm-skel-row-status" />
+                <div className="adm-skeleton adm-skel-row-date" />
+                <div className="adm-skeleton adm-skel-row-actions" />
+              </div>
+            ))}
+          </div>
         ) : users.length === 0 ? (
           <div className="adm-empty-state">
             <Users size={40} /><h3>No users found</h3>

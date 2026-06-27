@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import {
   Users, UserPlus, UserX, Shield, TrendingUp, Activity,
-  Clock, AlertTriangle, Loader2, Eye, ArrowRight
+  Clock, AlertTriangle, Eye, ArrowRight
 } from 'lucide-react';
 
 const StatCard = ({ icon: Icon, label, value, color, sub }) => (
@@ -48,9 +48,44 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="adm-loading-state">
-        <Loader2 size={28} className="adm-spin" />
-        <span>Loading dashboard...</span>
+      <div className="adm-dashboard">
+        <div className="adm-dash-header">
+          <div>
+            <div className="adm-skeleton" style={{ height: 26, width: 240, marginBottom: 8 }} />
+            <div className="adm-skeleton" style={{ height: 14, width: 300 }} />
+          </div>
+        </div>
+        <div className="adm-skel-stats-grid">
+          {[...Array(6)].map((_, i) => (
+            <div className="adm-skel-stat" key={i}>
+              <div className="adm-skel-stat-top">
+                <div className="adm-skeleton adm-skel-stat-icon" />
+                <div className="adm-skeleton adm-skel-stat-trend" />
+              </div>
+              <div className="adm-skeleton adm-skel-stat-val" />
+              <div className="adm-skeleton" style={{ height: 12, width: 80 }} />
+            </div>
+          ))}
+        </div>
+        <div className="adm-skel-table">
+          <div className="adm-skel-thead">
+            <div className="adm-skeleton adm-skel-th" />
+            <div className="adm-skeleton" style={{ height: 14, width: 100 }} />
+            <div className="adm-skeleton" style={{ height: 14, width: 60 }} />
+            <div className="adm-skeleton" style={{ height: 14, width: 70 }} />
+            <div className="adm-skeleton" style={{ height: 14, width: 80 }} />
+          </div>
+          {[...Array(5)].map((_, i) => (
+            <div className="adm-skel-row" key={i}>
+              <div className="adm-skeleton adm-skel-row-avatar" />
+              <div className="adm-skeleton adm-skel-row-name" />
+              <div className="adm-skeleton adm-skel-row-email" />
+              <div className="adm-skeleton adm-skel-row-role" />
+              <div className="adm-skeleton adm-skel-row-status" />
+              <div className="adm-skeleton adm-skel-row-date" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
