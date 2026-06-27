@@ -8,6 +8,7 @@ import FounderProfile from '../features/founder/FounderProfile';
 import ScoreForm from '../features/founder/ScoreForm';
 import InvestorsList from '../features/founder/InvestorsList';
 import InvestorDetail from '../features/founder/InvestorDetail';
+import FounderSaved from '../features/founder/FounderSaved';
 import DealFeed from '../features/investor/DealFeed';
 import SavedStartups from '../features/investor/SavedStartups';
 import StartupDetails from '../features/investor/StartupDetails';
@@ -42,6 +43,7 @@ function AppRoutes() {
         <Route path="profile" element={<FounderProfile />} />
         <Route path="investors" element={<InvestorsList />} />
         <Route path="investors/:id" element={<InvestorDetail />} />
+        <Route path="saved" element={<FounderSaved />} />
         <Route path="settings" element={<Placeholder title="Settings" />} />
       </Route>
 

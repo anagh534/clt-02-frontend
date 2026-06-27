@@ -11,9 +11,13 @@ import {
   Building2,
   Users,
   ExternalLink,
-  X
+  X,
+  Bookmark,
+  BookmarkCheck
 } from 'lucide-react';
 import { useInvestors } from '../../hooks/useInvestors';
+import { useToggleShortlist, useSyncShortlistStore } from '../../hooks/useShortlist';
+import { useShortlistStore } from '../../store/shortlistStore';
 import Spinner from '../../components/ui/Spinner';
 import EmptyState from '../../components/ui/EmptyState';
 import ErrorState from '../../components/ui/ErrorState';
@@ -69,6 +73,14 @@ const formatStage = (stage) => {
 /* ─── Main Component ────────────────────────────────────────── */
 const InvestorsList = () => {
   const navigate = useNavigate();
+  const toggleShortlist = useToggleShortlist();
+  const shortlistedIds = useShortlistStore((s) => s.shortlistedIds);
+
+  // Sync shortlisted IDs into store on mount
+  useSyncShortlistStore();
+
+  // Track which investor is being toggled to only disable that card
+  const [pendingToggleId, setPendingToggleId] = useState(null);
 
   // Filter / search / sort / pagination state
   const [search, setSearch] = useState('');
@@ -390,14 +402,35 @@ const InvestorsList = () => {
                     )}
                   </div>
 
-                  {/* View Profile button */}
-                  <button
-                    className="investor-view-btn"
-                    onClick={() => navigate(`/founder/investors/${investor._id}`)}
-                  >
-                    <ExternalLink size={15} />
-                    View Profile
-                  </button>
+                  {/* Action buttons */}
+                  <div className="investor-card-actions">
+                    <button
+                      className={`investor-save-btn ${shortlistedIds.has(investor._id) ? 'saved' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPendingToggleId(investor._id);
+                        toggleShortlist.mutate(
+                          { investorId: investor._id, isShortlisted: shortlistedIds.has(investor._id) },
+                          { onSettled: () => setPendingToggleId(null) }
+                        );
+                      }}
+                      disabled={pendingToggleId === investor._id}
+                      title={shortlistedIds.has(investor._id) ? 'Remove from shortlist' : 'Save to shortlist'}
+                    >
+                      {shortlistedIds.has(investor._id) ? (
+                        <><BookmarkCheck size={15} /> Saved</>
+                      ) : (
+                        <><Bookmark size={15} /> Save</>
+                      )}
+                    </button>
+                    <button
+                      className="investor-view-btn"
+                      onClick={() => navigate(`/founder/investors/${investor._id}`)}
+                    >
+                      <ExternalLink size={15} />
+                      View Profile
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

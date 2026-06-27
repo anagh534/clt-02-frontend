@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useUiStore } from '../../store/uiStore';
-import { LayoutDashboard, TrendingUp, Bookmark, User, Settings, LogOut, Menu, X, Sun, Moon, Bell, Search as SearchIcon } from 'lucide-react';
+import { useShortlistCount } from '../../hooks/useShortlist';
+import { useShortlistStore } from '../../store/shortlistStore';
+import { LayoutDashboard, TrendingUp, Bookmark, BookmarkCheck, User, Settings, LogOut, Menu, X, Sun, Moon, Bell, Search as SearchIcon } from 'lucide-react';
 
 export const Sidebar = ({ open, onClose }) => {
   const { user, logout } = useAuthStore();
@@ -17,11 +19,16 @@ export const Sidebar = ({ open, onClose }) => {
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(path + '/');
 
+  const count = useShortlistStore((s) => s.count);
+
+  useShortlistCount();
+
   const founderLinks = [
-    { to: '/founder/dashboard',  icon: <LayoutDashboard size={17} />, label: 'Dashboard' },
-    { to: '/founder/investors',  icon: <SearchIcon size={17} />,     label: 'Investors' },
-    { to: '/founder/onboarding', icon: <TrendingUp size={17} />,      label: 'Update Score' },
-    { to: '/founder/profile',    icon: <User size={17} />,            label: 'Profile' },
+    { to: '/founder/dashboard',  icon: <LayoutDashboard size={17} />,        label: 'Dashboard' },
+    { to: '/founder/investors',  icon: <SearchIcon size={17} />,             label: 'Investors' },
+    { to: '/founder/saved',      icon: <BookmarkCheck size={17} />,          label: `Saved${count > 0 ? ` (${count})` : ''}` },
+    { to: '/founder/onboarding', icon: <TrendingUp size={17} />,             label: 'Update Score' },
+    { to: '/founder/profile',    icon: <User size={17} />,                   label: 'Profile' },
   ];
 
   const investorLinks = [

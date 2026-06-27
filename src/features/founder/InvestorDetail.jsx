@@ -12,9 +12,13 @@ import {
   Users,
   ExternalLink,
   Mail,
-  Phone
+  Phone,
+  Bookmark,
+  BookmarkCheck
 } from 'lucide-react';
 import { useInvestor } from '../../hooks/useInvestors';
+import { useToggleShortlist, useSyncShortlistStore } from '../../hooks/useShortlist';
+import { useShortlistStore } from '../../store/shortlistStore';
 import Spinner from '../../components/ui/Spinner';
 import ErrorState from '../../components/ui/ErrorState';
 
@@ -35,6 +39,13 @@ const InvestorDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, isLoading, isError, error, refetch } = useInvestor(id);
+  const toggleShortlist = useToggleShortlist();
+  const shortlistedIds = useShortlistStore((s) => s.shortlistedIds);
+
+  // Sync shortlisted IDs into store on mount
+  useSyncShortlistStore();
+
+  const isShortlisted = shortlistedIds.has(id);
 
   const investor = data?.data || data;
 
@@ -138,6 +149,19 @@ const InvestorDetail = () => {
             <div className="investor-detail-stat-val">{investor.profileViews || 0}</div>
           </div>
         </div>
+
+        {/* Shortlist toggle button */}
+        <button
+          className={`investor-detail-save-btn ${isShortlisted ? 'saved' : ''}`}
+          onClick={() => toggleShortlist.mutate({ investorId: id, isShortlisted })}
+          disabled={toggleShortlist.isPending}
+        >
+          {isShortlisted ? (
+            <><BookmarkCheck size={18} /> Saved — Remove from Shortlist</>
+          ) : (
+            <><Bookmark size={18} /> Save to Shortlist</>
+          )}
+        </button>
       </div>
 
       <div className="investor-detail-layout">

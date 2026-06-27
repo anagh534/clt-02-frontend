@@ -5597,3 +5597,142 @@ select.input {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SHORTLIST / SAVED FEATURES
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Card action buttons row ──────────────────────────────── */
+.investor-card-actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: auto;
+  padding-top: var(--sp-3);
+}
+.investor-card-actions .investor-view-btn {
+  flex: 1;
+}
+
+/* ── Save button ──────────────────────────────────────────── */
+.investor-save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--ink-dim);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--body);
+  cursor: pointer;
+  transition: all var(--ease);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.investor-save-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.investor-save-btn.saved {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.investor-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Save button on detail page ───────────────────────────── */
+.investor-detail-save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: var(--sp-4);
+  padding: 12px 20px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--ink-muted);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--body);
+  cursor: pointer;
+  transition: all var(--ease);
+  position: relative;
+  z-index: 1;
+}
+.investor-detail-save-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.investor-detail-save-btn.saved {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.investor-detail-save-btn.saved:hover {
+  background: var(--red-dim);
+  border-color: var(--red);
+  color: var(--red);
+}
+.investor-detail-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Saved card footer (Contact + Remove) ─────────────────── */
+.saved-card-footer {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line-2);
+}
+.saved-contact-btn,
+.saved-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 9px 0;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--body);
+  cursor: pointer;
+  transition: all var(--ease);
+  white-space: nowrap;
+}
+.saved-contact-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+}
+.saved-contact-btn:hover:not(:disabled) {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+.saved-contact-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.saved-remove-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+}
+.saved-remove-btn:hover {
+  background: var(--red-dim);
+  border-color: var(--red);
+  color: var(--red);
+}
