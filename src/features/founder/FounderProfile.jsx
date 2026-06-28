@@ -6,13 +6,44 @@ import { mockUsers } from '../../api/mockData';
 import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, TrendingUp } from 'lucide-react';
 import Spinner from '../../components/ui/Spinner';
 
+const formatStage = (stg) => {
+  if (!stg) return '';
+  if (stg === 'preseed') return 'Pre-Seed';
+  if (stg === 'seed') return 'Seed';
+  if (stg === 'seriesA') return 'Series A';
+  if (stg === 'seriesB') return 'Series B+';
+  return stg;
+};
+
+const formatSector = (sec) => {
+  if (!sec) return '';
+  if (sec === 'ai') return 'AI';
+  return sec.charAt(0).toUpperCase() + sec.slice(1);
+};
+
+const formatARR = (mrr) => {
+  if (mrr === undefined || mrr === null || mrr === '' || isNaN(mrr)) return '—';
+  const arr = Number(mrr) * 12;
+  if (arr >= 1000000) return `$${(arr / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (arr >= 1000) return `$${(arr / 1000).toFixed(0)}k`;
+  return `$${arr}`;
+};
+
+const formatGrowth = (growth) => {
+  if (growth === undefined || growth === null || growth === '' || isNaN(growth)) return '—';
+  return `${growth}% MoM`;
+};
+
 const FounderProfile = () => {
   const { user } = useAuthStore();
-  const { data: startup, isLoading } = useFounderStartup();
+  const { data: startupData, isLoading } = useFounderStartup();
   const [copied, setCopied] = useState(false);
 
+  const founder = startupData?.founder;
+  const score = startupData?.score;
+
   const fullUser = mockUsers.find(u => u.id === user?.id) || user;
-  const profileUrl = `${window.location.origin}/profile/founder/${fullUser?.profileSlug || user?.id}`;
+  const profileUrl = `${window.location.origin}/profile/founder/${founder?.slug || user?.id}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(profileUrl).then(() => {
@@ -37,7 +68,14 @@ const FounderProfile = () => {
 
   if (isLoading) return <Spinner text="Loading profile..." />;
 
-  const scoreTier = startup?.score >= 90 ? 'A+' : startup?.score >= 80 ? 'A' : startup?.score >= 70 ? 'B' : 'C';
+  const scoreTier = score?.tier || 'D';
+
+  const breakdownItems = score ? [
+    { name: 'Financial Health', val: score.breakdown?.financial || 0 },
+    { name: 'Team Strength',    val: score.breakdown?.team || 0 },
+    { name: 'Traction',         val: score.breakdown?.traction || 0 },
+    { name: 'Market Size',      val: score.breakdown?.market || 0 },
+  ] : [];
 
   return (
     <>
@@ -79,18 +117,20 @@ const FounderProfile = () => {
           {/* Identity card */}
           <div className="prof-card">
             <div className="prof-avatar-wrap">
-              <div className="prof-avatar">{user?.name?.charAt(0)}</div>
+              <div className="prof-avatar" style={{ backgroundColor: founder?.logoColor || '#D4AF37' }}>
+                {user?.name?.charAt(0)}
+              </div>
               <div className="prof-verified">✓</div>
             </div>
             <div className="prof-name">{user?.name}</div>
             <div className="prof-title">{fullUser?.title || 'Founder'}</div>
-            {fullUser?.company && (
-              <div className="prof-company">{fullUser.company}</div>
+            {founder?.companyName && (
+              <div className="prof-company">{founder.companyName}</div>
             )}
-            {fullUser?.location && (
+            {(founder?.city || founder?.country) && (
               <div className="prof-meta-row">
                 <MapPin size={14} />
-                {fullUser.location}
+                {founder.city || ''}{founder.city && founder.country ? ', ' : ''}{founder.country || ''}
               </div>
             )}
 
@@ -118,10 +158,10 @@ const FounderProfile = () => {
           </div>
 
           {/* InvestScore card */}
-          {startup?.score && (
+          {score && (
             <div className="prof-card prof-score-card">
               <div className="prof-score-label">InvestScore</div>
-              <div className="prof-score-num">{startup.score}</div>
+              <div className="prof-score-num">{score.total}</div>
               <div className="prof-score-tier">
                 <span className="tier-badge">{scoreTier}</span>
                 Tier {scoreTier}
@@ -139,36 +179,38 @@ const FounderProfile = () => {
         {/* Right column */}
         <div className="prof-right">
           {/* Startup card */}
-          {startup ? (
+          {founder ? (
             <div className="prof-card">
               <div className="prof-section-h">Startup</div>
               <div className="prof-startup-head">
-                <div className="startup-logo">{startup.name?.charAt(0)}</div>
+                <div className="startup-logo" style={{ backgroundColor: founder.logoColor || '#D4AF37' }}>
+                  {founder.companyName?.charAt(0)}
+                </div>
                 <div>
-                  <div className="prof-startup-name">{startup.name}</div>
-                  <div className="prof-startup-tagline">{startup.tagline}</div>
+                  <div className="prof-startup-name">{founder.companyName}</div>
+                  <div className="prof-startup-tagline">{founder.tagline}</div>
                 </div>
               </div>
               <div className="prof-tags">
-                <span className="prof-tag">{startup.industry}</span>
-                <span className="prof-tag">{startup.stage}</span>
-                <span className="prof-tag">{startup.location}</span>
+                <span className="prof-tag">{formatSector(founder.sector)}</span>
+                <span className="prof-tag">{formatStage(founder.stage)}</span>
+                <span className="prof-tag">{founder.city || ''}{founder.city && founder.country ? ', ' : ''}{founder.country || ''}</span>
               </div>
-              {startup.description && (
-                <p className="prof-desc">{startup.description}</p>
+              {founder.description && (
+                <p className="prof-desc">{founder.description}</p>
               )}
               <div className="prof-metrics-grid">
                 <div className="prof-metric">
                   <div className="prof-metric-lbl">ARR</div>
-                  <div className="prof-metric-val">{startup.metrics?.arr || '—'}</div>
+                  <div className="prof-metric-val">{formatARR(score?.inputs?.mrr)}</div>
                 </div>
                 <div className="prof-metric">
                   <div className="prof-metric-lbl">Growth</div>
-                  <div className="prof-metric-val text-green">{startup.metrics?.growth || '—'}</div>
+                  <div className="prof-metric-val text-green">{formatGrowth(score?.inputs?.growth)}</div>
                 </div>
                 <div className="prof-metric">
                   <div className="prof-metric-lbl">Runway</div>
-                  <div className="prof-metric-val">{startup.metrics?.runway || '—'}</div>
+                  <div className="prof-metric-val">{score?.inputs?.runway || '—'}</div>
                 </div>
               </div>
             </div>
@@ -183,16 +225,11 @@ const FounderProfile = () => {
           )}
 
           {/* Score breakdown */}
-          {startup?.score && (
+          {score && (
             <div className="prof-card">
               <div className="prof-section-h">Score Breakdown</div>
               <div className="score-bars">
-                {[
-                  { name: 'Financial Health', val: 92 },
-                  { name: 'Team', val: 88 },
-                  { name: 'Traction', val: 81 },
-                  { name: 'Market Size', val: 79 },
-                ].map(item => (
+                {breakdownItems.map(item => (
                   <div className="score-bar-row" key={item.name}>
                     <div className="score-bar-head">
                       <span className="score-bar-name">{item.name}</span>

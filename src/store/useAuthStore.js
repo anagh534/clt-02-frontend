@@ -1,41 +1,51 @@
-import { create } from 'zustand'
-import axios from 'axios'
+import { create } from 'zustand';
+import axiosInstance from '../api/axiosInstance';
 
-const STORAGE_KEY = 'vite_app_auth'
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api'
+const STORAGE_KEY = 'vite_app_auth';
 
 function getStoredAuth() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
   } catch {
-    return null
+    return null;
   }
 }
 
-const stored = getStoredAuth()
+const stored = getStoredAuth();
 
 export const useAuthStore = create((set) => ({
   user: stored?.user || null,
-  accessToken: stored?.accessToken || null,
-  isAuthenticated: Boolean(stored?.accessToken),
+  isAuthenticated: Boolean(stored?.user),
 
-  login: (data) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  login: (user) => {
+    const data = { user };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     set({
-      user: data.user || null,
-      accessToken: data.accessToken || null,
-      isAuthenticated: Boolean(data.accessToken),
-    })
+      user,
+      isAuthenticated: true,
+    });
   },
 
   logout: async () => {
     try {
-      const stored = getStoredAuth()
-      if (stored?.refreshToken) {
-        await axios.post(`${BASE_URL}/auth/logout`, { refreshToken: stored.refreshToken })
-      }
-    } catch {}
+      await axiosInstance.post('/auth/logout');
+    } catch (e) {
+      console.error('Logout error', e);
+    }
     localStorage.removeItem(STORAGE_KEY);
-    set({ user: null, accessToken: null, isAuthenticated: false })
+    set({ user: null, isAuthenticated: false });
   },
-}))
+
+  checkSession: async () => {
+    try {
+      const { data } = await axiosInstance.get('/auth/me');
+      if (data.success && data.user) {
+        set({ user: data.user, isAuthenticated: true });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: data.user }));
+      }
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      set({ user: null, isAuthenticated: false });
+    }
+  }
+}));

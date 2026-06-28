@@ -1,17 +1,25 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AuthLayout from '../components/layout/AuthLayout';
 import DashboardLayout from '../components/layout/DashboardLayout';
+import AdminLayout from '../components/layout/AdminLayout';
 import Login from '../features/auth/Login';
 import Signup from '../features/auth/Signup';
 import FounderDashboard from '../features/founder/FounderDashboard';
 import FounderProfile from '../features/founder/FounderProfile';
 import ScoreForm from '../features/founder/ScoreForm';
+import InvestorsList from '../features/founder/InvestorsList';
+import InvestorDetail from '../features/founder/InvestorDetail';
+import FounderSaved from '../features/founder/FounderSaved';
 import DealFeed from '../features/investor/DealFeed';
 import SavedStartups from '../features/investor/SavedStartups';
 import StartupDetails from '../features/investor/StartupDetails';
 import InvestorProfile from '../features/investor/InvestorProfile';
 import PublicProfile from '../features/public/PublicProfile';
 import LandingPage from '../features/public/LandingPage';
+import AdminLogin from '../features/admin/AdminLogin';
+import AdminDashboard from '../features/admin/AdminDashboard';
+import AdminUsers from '../features/admin/AdminUsers';
+import AdminUserDetail from '../features/admin/AdminUserDetail';
 
 const Placeholder = ({ title }) => (
   <div className="card" style={{ textAlign: 'center', padding: '60px 20px', maxWidth: '480px', margin: '40px auto' }}>
@@ -38,6 +46,9 @@ function AppRoutes() {
         <Route path="dashboard" element={<FounderDashboard />} />
         <Route path="onboarding" element={<ScoreForm />} />
         <Route path="profile" element={<FounderProfile />} />
+        <Route path="investors" element={<InvestorsList />} />
+        <Route path="investors/:id" element={<InvestorDetail />} />
+        <Route path="saved" element={<FounderSaved />} />
         <Route path="settings" element={<Placeholder title="Settings" />} />
       </Route>
 
@@ -49,6 +60,15 @@ function AppRoutes() {
         <Route path="startup/:id" element={<StartupDetails />} />
         <Route path="profile" element={<InvestorProfile />} />
         <Route path="settings" element={<Placeholder title="Settings" />} />
+      </Route>
+
+      {/* Admin Panel */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="users/:id" element={<AdminUserDetail />} />
       </Route>
 
       {/* Public profile — accessible without login */}

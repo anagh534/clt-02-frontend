@@ -10,4 +10,8 @@ export const ENDPOINTS = {
   PROFILE: '/user/profile',
   CUSTOMIZE: 'user/customize',
   CHANGE_PASSWORD: '/user/change-password',
+
+  // Investors
+  INVESTORS: '/investors',
+  INVESTOR_BY_ID: (id) => `/investors/${id}`,
 };

@@ -1,64 +1,43 @@
-import { mockInvestors } from '../api/mockData';
-
-// Simulated delay for realistic API behavior
-const delay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
-
-const getInvestorsData = () => {
-  const storedData = localStorage.getItem('investors_data');
-  if (storedData) {
-    return JSON.parse(storedData);
-  }
-  localStorage.setItem('investors_data', JSON.stringify(mockInvestors));
-  return mockInvestors;
-};
-
-const saveInvestorsData = (data) => {
-  localStorage.setItem('investors_data', JSON.stringify(data));
-};
+import axiosInstance from '../api/axiosInstance';
+import { ENDPOINTS } from '../api/endpoints';
 
 export const investorService = {
-  async getInvestors() {
-    await delay(600); // Simulate network latency
-    return getInvestorsData();
+  /**
+   * Fetch paginated investors list with search, filters, and sorting
+   */
+  async getInvestors(params = {}) {
+    const queryParams = new URLSearchParams();
+
+    if (params.search) queryParams.set('search', params.search);
+    if (params.industry) queryParams.set('industry', params.industry);
+    if (params.stage) queryParams.set('stage', params.stage);
+    if (params.location) queryParams.set('location', params.location);
+    if (params.page) queryParams.set('page', params.page);
+    if (params.limit) queryParams.set('limit', params.limit);
+    if (params.sort) queryParams.set('sort', params.sort);
+
+    const queryString = queryParams.toString();
+    const url = queryString
+      ? `${ENDPOINTS.INVESTORS}?${queryString}`
+      : ENDPOINTS.INVESTORS;
+
+    const { data } = await axiosInstance.get(url);
+    return data;
   },
 
+  /**
+   * Fetch single investor by ID
+   */
   async getInvestorById(id) {
-    await delay(400);
-    const data = getInvestorsData();
-    const investor = data.find(inv => inv.id === id);
-    if (!investor) throw new Error('Investor not found');
-    return investor;
+    const { data } = await axiosInstance.get(ENDPOINTS.INVESTOR_BY_ID(id));
+    return data;
   },
 
-  async createInvestor(newInvestor) {
-    await delay(700);
-    const data = getInvestorsData();
-    const investor = {
-      ...newInvestor,
-      id: Date.now().toString(),
-    };
-    const updatedData = [...data, investor];
-    saveInvestorsData(updatedData);
-    return investor;
-  },
-
-  async updateInvestor(id, updatedFields) {
-    await delay(700);
-    const data = getInvestorsData();
-    const index = data.findIndex(inv => inv.id === id);
-    if (index === -1) throw new Error('Investor not found');
-    
-    const updatedInvestor = { ...data[index], ...updatedFields };
-    data[index] = updatedInvestor;
-    saveInvestorsData(data);
-    return updatedInvestor;
-  },
-
-  async deleteInvestor(id) {
-    await delay(600);
-    const data = getInvestorsData();
-    const updatedData = data.filter(inv => inv.id !== id);
-    saveInvestorsData(updatedData);
-    return true;
+  /**
+   * Create or update investor profile
+   */
+  async upsertInvestorProfile(profileData) {
+    const { data } = await axiosInstance.post(ENDPOINTS.INVESTORS, profileData);
+    return data;
   }
 };
