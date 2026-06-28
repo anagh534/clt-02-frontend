@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { investorService } from '../services/investorService';
 
-export const useInvestors = () => {
+export const useInvestors = (params = {}) => {
   return useQuery({
-    queryKey: ['investors'],
-    queryFn: investorService.getInvestors,
+    queryKey: ['investors', params],
+    queryFn: () => investorService.getInvestors(params),
+    staleTime: 30_000, // 30 seconds before refetch
   });
 };
 
@@ -16,31 +17,10 @@ export const useInvestor = (id) => {
   });
 };
 
-export const useCreateInvestor = () => {
+export const useUpsertInvestor = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: investorService.createInvestor,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['investors'] });
-    },
-  });
-};
-
-export const useUpdateInvestor = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }) => investorService.updateInvestor(id, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['investors'] });
-      queryClient.invalidateQueries({ queryKey: ['investors', variables.id] });
-    },
-  });
-};
-
-export const useDeleteInvestor = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: investorService.deleteInvestor,
+    mutationFn: investorService.upsertInvestorProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['investors'] });
     },

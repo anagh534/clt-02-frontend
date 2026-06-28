@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useUiStore } from '../../store/uiStore';
-import { LayoutDashboard, TrendingUp, Bookmark, User, Settings, LogOut, Menu, X, Sun, Moon, Bell, Search } from 'lucide-react';
+import { useShortlistCount } from '../../hooks/useShortlist';
+import { useShortlistStore } from '../../store/shortlistStore';
+import { LayoutDashboard, TrendingUp, Bookmark, BookmarkCheck, User, Settings, LogOut, Menu, X, Sun, Moon, Bell, Search as SearchIcon } from 'lucide-react';
 
 export const Sidebar = ({ open, onClose }) => {
   const { user, logout } = useAuthStore();
@@ -17,10 +19,16 @@ export const Sidebar = ({ open, onClose }) => {
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(path + '/');
 
+  const count = useShortlistStore((s) => s.count);
+
+  useShortlistCount();
+
   const founderLinks = [
-    { to: '/founder/dashboard',  icon: <LayoutDashboard size={17} />, label: 'Dashboard' },
-    { to: '/founder/onboarding', icon: <TrendingUp size={17} />,      label: 'Update Score' },
-    { to: '/founder/profile',    icon: <User size={17} />,            label: 'Profile' },
+    { to: '/founder/dashboard',  icon: <LayoutDashboard size={17} />,        label: 'Dashboard' },
+    { to: '/founder/investors',  icon: <SearchIcon size={17} />,             label: 'Investors' },
+    { to: '/founder/saved',      icon: <BookmarkCheck size={17} />,          label: `Saved${count > 0 ? ` (${count})` : ''}` },
+    { to: '/founder/onboarding', icon: <TrendingUp size={17} />,             label: 'Update Score' },
+    { to: '/founder/profile',    icon: <User size={17} />,                   label: 'Profile' },
   ];
 
   const investorLinks = [
@@ -152,14 +160,25 @@ const DashboardLayout = ({ allowedRoles = [] }) => {
           >
             <Menu size={20} />
           </button>
-          <span className="mobile-topnav-logo">InvestScore</span>
-          <button
-            className="mobile-menu-btn"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-          </button>
+          <span className="mobile-topnav-logo">
+            <span style={{ color: 'var(--accent)' }}>◆</span> InvestScore
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              className="mobile-menu-btn"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+            <button className="mobile-menu-btn" aria-label="Notifications" style={{ position: 'relative' }}>
+              <Bell size={17} />
+              <span className="topbar-badge" />
+            </button>
+            <div className="topbar-avatar" title={user.name} style={{ width: '34px', height: '34px', fontSize: '13px' }}>
+              {user.name.charAt(0)}
+            </div>
+          </div>
         </div>
 
         <div className="main-inner">
