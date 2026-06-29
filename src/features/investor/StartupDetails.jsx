@@ -4,6 +4,7 @@ import { useStartupDetails, useToggleSaveStartup, useAddInvestorScore } from '..
 import { useAuthStore } from '../../store/authStore';
 import Spinner from '../../components/ui/Spinner';
 import { ArrowLeft, Star, X, Check } from 'lucide-react';
+import OutreachModal from './OutreachModal';
 
 const CONVICTION_LEVELS = [
   { value: 'pass',   label: 'Pass',      color: '#fc1a1a' },
@@ -178,6 +179,7 @@ const StartupDetails = () => {
   const toggleSave = useToggleSaveStartup();
   const user = useAuthStore(state => state.user);
   const [showScorePanel, setShowScorePanel] = useState(false);
+  const [showOutreach, setShowOutreach] = useState(false);
 
   if (isLoading) return <Spinner text="Loading startup details..." />;
   if (!startup) return <div className="main">Startup not found</div>;
@@ -303,7 +305,7 @@ const StartupDetails = () => {
           <div className="detail-cta-card">
             <div className="detail-cta-h">Reach out to {startup.name}</div>
             <div className="detail-cta-sub">Send a verified intro. Founders see your fund and respond faster.</div>
-            <button className="btn btn-outline btn-full" style={{ marginBottom: '8px' }}>✉ Email Founder</button>
+            <button className="btn btn-outline btn-full" style={{ marginBottom: '8px' }} onClick={() => setShowOutreach(true)}>✉ Email Founder</button>
             <button
               className={`btn btn-full ${isSaved ? 'btn-ghost' : 'btn-accent'}`}
               onClick={() => toggleSave.mutate(startup.id)}
@@ -325,6 +327,9 @@ const StartupDetails = () => {
 
       {showScorePanel && (
         <InvestorScorePanel startup={startup} onClose={() => setShowScorePanel(false)} />
+      )}
+      {showOutreach && (
+        <OutreachModal startup={startup} onClose={() => setShowOutreach(false)} />
       )}
     </>
   );
