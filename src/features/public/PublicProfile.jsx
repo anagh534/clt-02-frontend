@@ -1,15 +1,84 @@
 import { Link, useParams } from 'react-router-dom';
-import { mockUsers, mockStartups } from '../../api/mockData';
-import { MapPin, Globe, Link2, AtSign, TrendingUp, Briefcase, DollarSign, ArrowLeft } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import axiosInstance from '../../api/axiosInstance';
+import Spinner from '../../components/ui/Spinner';
+import { MapPin, Globe, Link2, AtSign, TrendingUp, Briefcase, DollarSign, ArrowLeft, Copy, Check, Share2, ExternalLink } from 'lucide-react';
+import { useState } from 'react';
 
 const PublicProfile = () => {
   const { role, slug } = useParams();
+  const [copied, setCopied] = useState(false);
 
-  const profileUser = mockUsers.find(
-    u => u.profileSlug === slug || u.id === slug
-  );
+  const { data: profileData, isLoading, isError } = useQuery({
+    queryKey: ['publicProfile', role, slug],
+    queryFn: async () => {
+      const endpoint = role === 'founder'
+        ? `/founders/public/${slug}`
+        : role === 'investor'
+          ? `/investors/public/${slug}`
+          : null;
 
-  if (!profileUser) {
+      if (!endpoint) {
+        throw new Error('Profile not found');
+      }
+
+      const { data } = await axiosInstance.get(endpoint);
+      return data.data;
+    },
+    enabled: !!role && !!slug,
+    retry: false,
+  });
+
+  const isFounder = role === 'founder';
+  const founder = profileData?.founder || null;
+  const investor = profileData?.investor || null;
+  const profileUser = isFounder ? founder : investor;
+  const displayName = isFounder
+    ? profileUser?.companyName || 'Founder'
+    : profileUser?.name || 'Investor';
+  const score = profileData?.score || null;
+  const profileUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/profile/${role}/${slug}`
+    : '';
+
+  const handleCopy = () => {
+    if (!profileUrl) return;
+    navigator.clipboard.writeText(profileUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const handleShare = async () => {
+    if (!profileUrl) return;
+
+    const shareText = isFounder && score
+      ? `Check out ${displayName}'s profile on InvestScore. Score: ${score.total} (${score.tier}).`
+      : `Check out ${displayName}'s profile on InvestScore.`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${displayName} — ${isFounder ? 'Founder' : 'Investor'} Profile`,
+          text: shareText,
+          url: profileUrl,
+        });
+      } catch (_) { }
+    } else {
+      handleCopy();
+    }
+  };
+
+  const openShare = (url) => {
+    if (!profileUrl) return;
+    window.open(url, '_blank', 'noopener,noreferrer,width=600,height=700');
+  };
+
+  if (isLoading) {
+    return <Spinner text="Loading profile..." />;
+  }
+
+  if (isError || !profileUser) {
     return (
       <div className="pub-not-found">
         <div className="pub-logo-bar">
@@ -20,7 +89,7 @@ const PublicProfile = () => {
             <div style={{ fontSize: '40px', marginBottom: '16px' }}>404</div>
             <div className="prof-section-h" style={{ marginBottom: '8px' }}>Profile not found</div>
             <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '24px' }}>
-              This profile link may be invalid or the user hasn't set up their profile yet.
+              This profile link may be invalid or the owner has kept the profile private.
             </p>
             <Link to="/auth/login" className="btn btn-accent">Go to InvestScore →</Link>
           </div>
@@ -28,10 +97,15 @@ const PublicProfile = () => {
       </div>
     );
   }
-
-  const isFounder = profileUser.role === 'founder';
-  const startup = isFounder ? mockStartups.find(s => s.founderId === profileUser.id) : null;
-  const scoreTier = startup?.score >= 90 ? 'A+' : startup?.score >= 80 ? 'A' : startup?.score >= 70 ? 'B' : 'C';
+  const scoreTier = score?.tier || 'C';
+  const shareText = isFounder && score
+    ? `Check out ${displayName}'s profile on InvestScore. Score: ${score.total} (${score.tier}).`
+    : `Check out ${displayName}'s profile on InvestScore.`;
+  const shareLinks = profileUrl ? {
+    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(profileUrl)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`,
+    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText} ${profileUrl}`)}`,
+  } : null;
 
   return (
     <div className="pub-profile-wrap">
@@ -46,17 +120,57 @@ const PublicProfile = () => {
       </div>
 
       <div className="pub-body">
+        <div className="prof-url-bar">
+          <span className="prof-url-label">Public profile link</span>
+          <div className="prof-url-row">
+            <span className="prof-url-text">{profileUrl}</span>
+            <button className="prof-url-copy" onClick={handleCopy}>
+              {copied ? <Check size={14} /> : <Copy size={14} />}
+              {copied ? 'Copied' : 'Copy'}
+            </button>
+            <button className="prof-url-copy" onClick={handleShare}>
+              <Share2 size={14} />
+              Share
+            </button>
+            <a className="prof-url-open" href={profileUrl} target="_blank" rel="noreferrer">
+              <ExternalLink size={14} />
+            </a>
+          </div>
+        </div>
+
+        {shareLinks && (
+          <div className="prof-card" style={{ marginBottom: '20px' }}>
+            <div className="prof-section-h">Share</div>
+            <p className="prof-desc" style={{ marginTop: '10px' }}>
+              {isFounder && score
+                ? `Share ${profileUser?.companyName || profileUser?.name} with a score of ${score.total} (${score.tier}).`
+                : `Share ${profileUser?.name}'s profile across your networks.`}
+            </p>
+            <div className="prof-links" style={{ marginTop: '16px' }}>
+              <a className="prof-url-copy" href={shareLinks.x} onClick={(e) => { e.preventDefault(); openShare(shareLinks.x); }}>
+                X
+              </a>
+              <a className="prof-url-copy" href={shareLinks.linkedin} onClick={(e) => { e.preventDefault(); openShare(shareLinks.linkedin); }}>
+                LinkedIn
+              </a>
+              <a className="prof-url-copy" href={shareLinks.whatsapp} onClick={(e) => { e.preventDefault(); openShare(shareLinks.whatsapp); }}>
+                WhatsApp
+              </a>
+            </div>
+          </div>
+        )}
+
         <div className="prof-layout">
           {/* Left column */}
           <div className="prof-left">
             <div className="prof-card">
               <div className="prof-avatar-wrap">
                 <div className={`prof-avatar ${!isFounder ? 'prof-avatar-blue' : ''}`}>
-                  {profileUser.name?.charAt(0)}
+                  {displayName.charAt(0)}
                 </div>
                 <div className="prof-verified">✓</div>
               </div>
-              <div className="prof-name">{profileUser.name}</div>
+              <div className="prof-name">{displayName}</div>
               <div className="prof-title">{profileUser.title || (isFounder ? 'Founder' : 'Investor')}</div>
               {profileUser.company && (
                 <div className="prof-company">{profileUser.company}</div>
@@ -89,10 +203,10 @@ const PublicProfile = () => {
             </div>
 
             {/* Score card for founder */}
-            {isFounder && startup?.score && (
+            {isFounder && score && (
               <div className="prof-card prof-score-card">
                 <div className="prof-score-label">InvestScore</div>
-                <div className="prof-score-num">{startup.score}</div>
+                <div className="prof-score-num">{score.total}</div>
                 <div className="prof-score-tier">
                   <span className="tier-badge">{scoreTier}</span>
                   Tier {scoreTier}
@@ -146,37 +260,37 @@ const PublicProfile = () => {
 
           {/* Right column */}
           <div className="prof-right">
-            {isFounder && startup ? (
+            {isFounder && founder ? (
               <>
                 <div className="prof-card">
                   <div className="prof-section-h">Startup</div>
                   <div className="prof-startup-head">
-                    <div className="startup-logo">{startup.name?.charAt(0)}</div>
+                    <div className="startup-logo">{founder.companyName?.charAt(0)}</div>
                     <div>
-                      <div className="prof-startup-name">{startup.name}</div>
-                      <div className="prof-startup-tagline">{startup.tagline}</div>
+                      <div className="prof-startup-name">{founder.companyName}</div>
+                      <div className="prof-startup-tagline">{founder.tagline}</div>
                     </div>
                   </div>
                   <div className="prof-tags">
-                    <span className="prof-tag">{startup.industry}</span>
-                    <span className="prof-tag">{startup.stage}</span>
-                    <span className="prof-tag">{startup.location}</span>
+                    <span className="prof-tag">{founder.sector}</span>
+                    <span className="prof-tag">{founder.stage}</span>
+                    <span className="prof-tag">{[founder.city, founder.country].filter(Boolean).join(', ')}</span>
                   </div>
-                  {startup.description && (
-                    <p className="prof-desc" style={{ marginTop: '16px' }}>{startup.description}</p>
+                  {founder.description && (
+                    <p className="prof-desc" style={{ marginTop: '16px' }}>{founder.description}</p>
                   )}
                   <div className="prof-metrics-grid">
                     <div className="prof-metric">
                       <div className="prof-metric-lbl">ARR</div>
-                      <div className="prof-metric-val">{startup.metrics?.arr || '—'}</div>
+                      <div className="prof-metric-val">{score?.inputs?.mrr ? `$${Number(score.inputs.mrr) * 12}` : '—'}</div>
                     </div>
                     <div className="prof-metric">
                       <div className="prof-metric-lbl">Growth</div>
-                      <div className="prof-metric-val text-green">{startup.metrics?.growth || '—'}</div>
+                      <div className="prof-metric-val text-green">{score?.inputs?.growth ? `${score.inputs.growth}% MoM` : '—'}</div>
                     </div>
                     <div className="prof-metric">
                       <div className="prof-metric-lbl">Runway</div>
-                      <div className="prof-metric-val">{startup.metrics?.runway || '—'}</div>
+                      <div className="prof-metric-val">{score?.inputs?.runway || '—'}</div>
                     </div>
                   </div>
                 </div>
@@ -185,10 +299,10 @@ const PublicProfile = () => {
                   <div className="prof-section-h">Score Breakdown</div>
                   <div className="score-bars">
                     {[
-                      { name: 'Financial Health', val: 92 },
-                      { name: 'Team', val: 88 },
-                      { name: 'Traction', val: 81 },
-                      { name: 'Market Size', val: 79 },
+                      { name: 'Financial Health', val: score?.breakdown?.financial || 0 },
+                      { name: 'Team', val: score?.breakdown?.team || 0 },
+                      { name: 'Traction', val: score?.breakdown?.traction || 0 },
+                      { name: 'Market Size', val: score?.breakdown?.market || 0 },
                     ].map(item => (
                       <div className="score-bar-row" key={item.name}>
                         <div className="score-bar-head">
