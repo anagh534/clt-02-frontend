@@ -10,6 +10,10 @@ export function useSessionExpiry() {
 
   useEffect(() => {
     function handleExpiry() {
+      if (window.location.pathname.startsWith('/auth')) {
+        return;
+      }
+
       logout()
       warning('Session Expired', 'You were inactive for 30 days. Please log in again.')
       // navigate('/login', { replace: true })
