@@ -35,12 +35,19 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      await axiosInstance.post('/auth/register/initiate', {
+      const { data } = await axiosInstance.post('/auth/register/initiate', {
         name,
         email,
         password,
         role
       });
+
+      if (data?.user) {
+        login(data.user);
+        navigate(`/${data.user.role}/dashboard`);
+        return;
+      }
+
       setStep(2);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to initiate signup');

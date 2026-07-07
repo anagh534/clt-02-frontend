@@ -21,10 +21,17 @@ const Login = () => {
     setLoading(true);
     
     try {
-      await axiosInstance.post('/auth/login/initiate', {
+      const { data } = await axiosInstance.post('/auth/login/initiate', {
         email,
         password
       });
+
+      if (data?.user) {
+        login(data.user);
+        navigate(`/${data.user.role}/dashboard`);
+        return;
+      }
+
       setStep(2);
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password');
