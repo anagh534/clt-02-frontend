@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
-import { mockStartups } from '../../api/mockData';
+import { useSavedStartups } from '../../hooks/useInvestor';
 import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, Briefcase, TrendingUp, DollarSign, Lock } from 'lucide-react';
 import Spinner from '../../components/ui/Spinner';
 
@@ -23,7 +23,8 @@ const InvestorProfile = () => {
   const investor = profileData;
   const profileUrl = investor?.slug ? `${window.location.origin}/profile/investor/${investor.slug}` : '';
 
-  const savedStartups = mockStartups.filter(s => s.savedBy?.includes(user?.id));
+  const { data: savedStartupsData } = useSavedStartups();
+  const savedStartups = Array.isArray(savedStartupsData) ? savedStartupsData : [];
 
   const toggleVisibility = useMutation({
     mutationFn: async (isPublic) => {
@@ -273,18 +274,25 @@ const InvestorProfile = () => {
               <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>No startups saved yet. Browse the deal feed to find opportunities.</p>
             ) : (
               <div className="prof-watch-list">
-                {savedStartups.map(s => (
-                  <div key={s.id} className="prof-watch-row">
-                    <div className="startup-logo" style={{ width: '44px', height: '44px', fontSize: '18px', borderRadius: '10px', flexShrink: 0 }}>
-                      {s.name.charAt(0)}
+                {savedStartups.map(s => {
+                  const id = s.id || s._id;
+                  const name = s.name || s.companyName || 'Startup';
+                  const industry = s.industry || s.sector || '—';
+                  const stage = s.stage || '—';
+                  const score = s.score ?? s.latestScore?.total ?? '—';
+                  return (
+                    <div key={id} className="prof-watch-row">
+                      <div className="startup-logo" style={{ width: '44px', height: '44px', fontSize: '18px', borderRadius: '10px', flexShrink: 0 }}>
+                        {name.charAt(0)}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="prof-watch-name">{name}</div>
+                        <div className="prof-watch-meta">{industry} · {stage}</div>
+                      </div>
+                      <div className="prof-watch-score">{score}</div>
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div className="prof-watch-name">{s.name}</div>
-                      <div className="prof-watch-meta">{s.industry} · {s.stage}</div>
-                    </div>
-                    <div className="prof-watch-score">{s.score}</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
