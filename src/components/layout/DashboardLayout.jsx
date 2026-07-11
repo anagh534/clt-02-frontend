@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useUiStore } from '../../store/uiStore';
 import { useShortlistCount } from '../../hooks/useShortlist';
 import { useShortlistStore } from '../../store/shortlistStore';
 import { LayoutDashboard, TrendingUp, Bookmark, BookmarkCheck, User, Settings, LogOut, Menu, X, Sun, Moon, Bell, Search as SearchIcon } from 'lucide-react';
+import NotificationsPopup from './NotificationsPopup';
 
 export const Sidebar = ({ open, onClose }) => {
   const { user, logout } = useAuthStore();
@@ -109,8 +110,11 @@ export const Sidebar = ({ open, onClose }) => {
 
 const DashboardLayout = ({ allowedRoles = [] }) => {
   const { isAuthenticated, user } = useAuthStore();
-  const { theme, toggleTheme } = useUiStore();
+  const { theme, toggleTheme } = useUiStore(); // desktop topbar toggle only
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const desktopBellRef = useRef(null);
+  const mobileBellRef = useRef(null);
 
   if (!isAuthenticated || !user) {
     return <Navigate to="/auth/login" replace />;
@@ -140,14 +144,25 @@ const DashboardLayout = ({ allowedRoles = [] }) => {
             >
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
-            <button className="topbar-icon-btn" aria-label="Notifications">
+            <button
+              ref={desktopBellRef}
+              className="topbar-icon-btn"
+              aria-label="Notifications"
+              aria-expanded={notifOpen}
+              onClick={() => setNotifOpen((v) => !v)}
+            >
               <Bell size={16} />
               <span className="topbar-badge" />
             </button>
             <div className="topbar-divider" />
-            <div className="topbar-avatar" title={user.name}>
+            <Link
+              to={`/${user.role}/profile`}
+              className="topbar-avatar topbar-avatar-link"
+              title={`Go to ${user.name}'s profile`}
+              aria-label="Open profile"
+            >
               {user.name.charAt(0)}
-            </div>
+            </Link>
           </div>
         </div>
 
@@ -165,21 +180,33 @@ const DashboardLayout = ({ allowedRoles = [] }) => {
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
+              ref={mobileBellRef}
               className="mobile-menu-btn"
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
+              aria-label="Notifications"
+              aria-expanded={notifOpen}
+              style={{ position: 'relative' }}
+              onClick={() => setNotifOpen((v) => !v)}
             >
-              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-            </button>
-            <button className="mobile-menu-btn" aria-label="Notifications" style={{ position: 'relative' }}>
               <Bell size={17} />
               <span className="topbar-badge" />
             </button>
-            <div className="topbar-avatar" title={user.name} style={{ width: '34px', height: '34px', fontSize: '13px' }}>
+            <Link
+              to={`/${user.role}/profile`}
+              className="topbar-avatar topbar-avatar-link"
+              title={`Go to ${user.name}'s profile`}
+              aria-label="Open profile"
+              style={{ width: '34px', height: '34px', fontSize: '13px' }}
+            >
               {user.name.charAt(0)}
-            </div>
+            </Link>
           </div>
         </div>
+
+        <NotificationsPopup
+          open={notifOpen}
+          onClose={() => setNotifOpen(false)}
+          anchorRefs={[desktopBellRef, mobileBellRef]}
+        />
 
         <div className="main-inner">
           <Outlet />

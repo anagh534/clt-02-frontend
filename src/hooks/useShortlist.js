@@ -1,15 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { shortlistService } from '../services/shortlistService';
 import { useShortlistStore } from '../store/shortlistStore';
+import { useAuthStore } from '../store/authStore';
 
 /**
  * Hook to fetch the full shortlist with search/filter/sort params
  */
 export const useShortlist = (params = {}) => {
+  const isFounder = useAuthStore((s) => s.user?.role === 'founder');
   return useQuery({
     queryKey: ['shortlist', params],
     queryFn: () => shortlistService.getShortlist(params),
     staleTime: 15_000,
+    enabled: isFounder,
   });
 };
 
@@ -19,6 +22,7 @@ export const useShortlist = (params = {}) => {
 export const useShortlistCount = () => {
   const setCount = useShortlistStore((s) => s.setCount);
   const setShortlistedIds = useShortlistStore((s) => s.setShortlistedIds);
+  const isFounder = useAuthStore((s) => s.user?.role === 'founder');
 
   return useQuery({
     queryKey: ['shortlistCount'],
@@ -28,7 +32,8 @@ export const useShortlistCount = () => {
       return result;
     },
     staleTime: 10_000,
-    refetchInterval: 30_000, // Poll for updates
+    refetchInterval: isFounder ? 30_000 : false,
+    enabled: isFounder,
   });
 };
 
@@ -72,6 +77,7 @@ export const useToggleShortlist = () => {
 export const useSyncShortlistStore = () => {
   const setShortlistedIds = useShortlistStore((s) => s.setShortlistedIds);
   const setCount = useShortlistStore((s) => s.setCount);
+  const isFounder = useAuthStore((s) => s.user?.role === 'founder');
 
   return useQuery({
     queryKey: ['shortlist', 'all'],
@@ -83,5 +89,6 @@ export const useSyncShortlistStore = () => {
       return result;
     },
     staleTime: 15_000,
+    enabled: isFounder,
   });
 };

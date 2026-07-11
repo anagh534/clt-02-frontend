@@ -20,6 +20,7 @@ import AdminLogin from '../features/admin/AdminLogin';
 import AdminDashboard from '../features/admin/AdminDashboard';
 import AdminUsers from '../features/admin/AdminUsers';
 import AdminUserDetail from '../features/admin/AdminUserDetail';
+import Settings from '../features/shared/Settings';
 
 const Placeholder = ({ title }) => (
   <div className="card" style={{ textAlign: 'center', padding: '60px 20px', maxWidth: '480px', margin: '40px auto' }}>
@@ -49,7 +50,7 @@ function AppRoutes() {
         <Route path="investors" element={<InvestorsList />} />
         <Route path="investors/:id" element={<InvestorDetail />} />
         <Route path="saved" element={<FounderSaved />} />
-        <Route path="settings" element={<Placeholder title="Settings" />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
 
       {/* Investor Flow */}
@@ -59,7 +60,7 @@ function AppRoutes() {
         <Route path="saved" element={<SavedStartups />} />
         <Route path="startup/:id" element={<StartupDetails />} />
         <Route path="profile" element={<InvestorProfile />} />
-        <Route path="settings" element={<Placeholder title="Settings" />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
 
       {/* Admin Panel */}
