@@ -2523,6 +2523,21 @@ select.input {
   line-height: 1.65;
 }
 
+.prof-error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 10px 14px;
+  background: var(--red-dim);
+  border: 1px solid rgba(255, 77, 106, 0.25);
+  border-radius: var(--r-md);
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: var(--sp-4);
+  line-height: 1.4;
+}
+
 .prof-startup-head {
   display: flex;
   align-items: center;

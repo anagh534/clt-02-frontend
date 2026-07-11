@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
 import { useSavedStartups } from '../../hooks/useInvestor';
-import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, Briefcase, TrendingUp, DollarSign, Lock } from 'lucide-react';
+import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, Briefcase, TrendingUp, DollarSign, Lock, AlertCircle, Edit2, X, Save } from 'lucide-react';
 import Spinner from '../../components/ui/Spinner';
 
 const InvestorProfile = () => {
@@ -26,13 +26,124 @@ const InvestorProfile = () => {
   const { data: savedStartupsData } = useSavedStartups();
   const savedStartups = Array.isArray(savedStartupsData) ? savedStartupsData : [];
 
+  const [editMode, setEditMode] = useState(false);
+  const [formError, setFormError] = useState(null);
+  const [formData, setFormData] = useState({
+    company: '',
+    title: '',
+    investmentFocus: '',
+    fundingStage: '',
+    location: '',
+    country: '',
+    city: '',
+    bio: '',
+    website: '',
+    linkedin: '',
+    twitter: '',
+    checkSizeMin: '',
+    checkSizeMax: '',
+    portfolioSize: ''
+  });
+
+  const saveProfile = useMutation({
+    mutationFn: async (profileData) => {
+      setFormError(null);
+      const { data } = await axiosInstance.post('/investors', profileData);
+      return data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['investorProfile', user?.id] });
+      setEditMode(false);
+    },
+    onError: (err) => {
+      const msg = err?.response?.data?.message || err?.message || 'Failed to save profile. Please try again.';
+      setFormError(msg);
+      console.error('Profile save error:', err);
+    }
+  });
+
+  const handleFormChange = (field) => (e) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const startEditing = () => {
+    // Populate form with existing data or defaults
+    if (investor) {
+      setFormData({
+        company: investor.company || '',
+        title: investor.title || '',
+        investmentFocus: Array.isArray(investor.focus) ? investor.focus.join(', ') : (investor.investmentFocus || []).join(', '),
+        fundingStage: investor.fundingStage || investor.stage || '',
+        location: investor.location || '',
+        country: investor.country || '',
+        city: investor.city || '',
+        bio: investor.bio || '',
+        website: investor.website || '',
+        linkedin: investor.linkedin || '',
+        twitter: investor.twitter || '',
+        checkSizeMin: investor.checkSizeMin || investor.checkSize?.split('–')[0]?.trim() || '',
+        checkSizeMax: investor.checkSizeMax || investor.checkSize?.split('–')[1]?.trim() || '',
+        portfolioSize: investor.portfolioSize || ''
+      });
+    }
+    setEditMode(true);
+    setFormError(null);
+  };
+
+  const cancelEditing = () => {
+    setEditMode(false);
+    setFormError(null);
+  };
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
+
+    if (!user?.name) {
+      setFormError('Your name is required. Please update your account settings.');
+      return;
+    }
+    
+    // Parse focus as array
+    const focusArray = formData.investmentFocus
+      ? formData.investmentFocus.split(',').map(s => s.trim()).filter(Boolean)
+      : [];
+
+    const payload = {
+      name: user.name,
+      company: formData.company,
+      title: formData.title,
+      investmentFocus: focusArray,
+      fundingStage: formData.fundingStage,
+      location: formData.location,
+      country: formData.country,
+      city: formData.city,
+      bio: formData.bio,
+      website: formData.website,
+      linkedin: formData.linkedin,
+      twitter: formData.twitter,
+      checkSizeMin: formData.checkSizeMin ? Number(formData.checkSizeMin) : undefined,
+      checkSizeMax: formData.checkSizeMax ? Number(formData.checkSizeMax) : undefined,
+      portfolioSize: formData.portfolioSize ? Number(formData.portfolioSize) : undefined
+    };
+
+    saveProfile.mutate(payload);
+  };
+
+  const [visibilityError, setVisibilityError] = useState(null);
+
   const toggleVisibility = useMutation({
     mutationFn: async (isPublic) => {
+      setVisibilityError(null);
       const { data } = await axiosInstance.patch('/investors/me/visibility', { isPublic });
       return data.data?.investor;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['investorProfile', user?.id] });
+    },
+    onError: (err) => {
+      const msg = err?.response?.data?.message || err?.message || 'Failed to update visibility. Please try again.';
+      setVisibilityError(msg);
+      console.error('Visibility update error:', err);
     }
   });
 
@@ -55,7 +166,7 @@ const InvestorProfile = () => {
           text: shareText,
           url: profileUrl,
         });
-      } catch (_) { }
+      } catch { /* User cancelled share dialog */ }
     } else {
       handleCopy();
     }
@@ -76,241 +187,394 @@ const InvestorProfile = () => {
           <div className="page-head-sub">Manage your investor profile visibility and share link</div>
         </div>
         <div className="page-head-actions">
-          <button
-            className="prof-share-btn"
-            onClick={() => investor && toggleVisibility.mutate(!investor.isPublic)}
-            disabled={!investor || toggleVisibility.isPending}
-          >
-            <Lock size={16} />
-            {investor?.isPublic ? 'Make Private' : 'Make Public'}
-          </button>
-          {investor?.isPublic && profileUrl && (
+          {!editMode && (
             <>
-              <button className="prof-share-btn" onClick={handleShare}>
-                <Share2 size={16} />
-                Share
-              </button>
-              <button className="prof-copy-btn" onClick={handleCopy}>
-                {copied ? <Check size={16} /> : <Copy size={16} />}
-                {copied ? 'Copied!' : 'Copy Link'}
-              </button>
+              {!investor ? (
+                <button className="prof-share-btn" onClick={startEditing}>
+                  <Edit2 size={16} />
+                  Create Profile
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="prof-share-btn"
+                    onClick={() => toggleVisibility.mutate(!investor.isPublic)}
+                    disabled={toggleVisibility.isPending}
+                  >
+                    <Lock size={16} />
+                    {toggleVisibility.isPending ? 'Updating...' : (investor?.isPublic ? 'Make Private' : 'Make Public')}
+                  </button>
+                  <button className="prof-share-btn" onClick={startEditing}>
+                    <Edit2 size={16} />
+                    Edit Profile
+                  </button>
+                  {investor?.isPublic && profileUrl && (
+                    <>
+                      <button className="prof-share-btn" onClick={handleShare}>
+                        <Share2 size={16} />
+                        Share
+                      </button>
+                      <button className="prof-copy-btn" onClick={handleCopy}>
+                        {copied ? <Check size={16} /> : <Copy size={16} />}
+                        {copied ? 'Copied!' : 'Copy Link'}
+                      </button>
+                    </>
+                  )}
+                </>
+              )}
             </>
           )}
         </div>
       </div>
 
       {/* Profile URL bar */}
-      {investor?.isPublic && profileUrl ? (
-        <div className="prof-url-bar">
-          <span className="prof-url-label">Your public profile link</span>
-          <div className="prof-url-row">
-            <span className="prof-url-text">{profileUrl}</span>
-            <button className="prof-url-copy" onClick={handleCopy}>
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-              {copied ? 'Copied' : 'Copy'}
+      {editMode ? (
+        <div className="prof-card" style={{ marginBottom: '20px' }}>
+          <div className="prof-section-h" style={{ marginBottom: '20px' }}>
+            {investor ? 'Edit Profile' : 'Create Profile'}
+            <button className="prof-url-copy" style={{ marginLeft: 'auto' }} onClick={cancelEditing}>
+              <X size={16} /> Cancel
             </button>
-            <a className="prof-url-open" href={profileUrl} target="_blank" rel="noreferrer">
-              <ExternalLink size={14} />
-            </a>
           </div>
+
+          {formError && (
+            <div className="prof-error-banner" style={{ marginBottom: '16px' }}>
+              <AlertCircle size={16} />
+              {formError}
+            </div>
+          )}
+
+          <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* Row 1 */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label className="input-lbl">Company / Firm</label>
+                <input className="input" value={formData.company} onChange={handleFormChange('company')} placeholder="e.g. Acme Ventures" />
+              </div>
+              <div>
+                <label className="input-lbl">Title</label>
+                <input className="input" value={formData.title} onChange={handleFormChange('title')} placeholder="e.g. Managing Partner" />
+              </div>
+            </div>
+
+            {/* Row 2 */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label className="input-lbl">City</label>
+                <input className="input" value={formData.city} onChange={handleFormChange('city')} placeholder="e.g. San Francisco" />
+              </div>
+              <div>
+                <label className="input-lbl">Country</label>
+                <input className="input" value={formData.country} onChange={handleFormChange('country')} placeholder="e.g. US" />
+              </div>
+            </div>
+
+            <div>
+              <label className="input-lbl">Location</label>
+              <input className="input" value={formData.location} onChange={handleFormChange('location')} placeholder="e.g. San Francisco, CA" />
+            </div>
+
+            <div>
+              <label className="input-lbl">Investment Focus (comma-separated)</label>
+              <input className="input" value={formData.investmentFocus} onChange={handleFormChange('investmentFocus')} placeholder="e.g. AI, Fintech, Climate" />
+            </div>
+
+            {/* Row 3 */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label className="input-lbl">Funding Stage</label>
+                <select className="input" value={formData.fundingStage} onChange={handleFormChange('fundingStage')}>
+                  <option value="">Select stage</option>
+                  <option value="preseed">Pre-Seed</option>
+                  <option value="seed">Seed</option>
+                  <option value="seriesa">Series A</option>
+                  <option value="seriesb">Series B</option>
+                  <option value="growth">Growth</option>
+                </select>
+              </div>
+              <div>
+                <label className="input-lbl">Portfolio Size</label>
+                <input className="input" type="number" value={formData.portfolioSize} onChange={handleFormChange('portfolioSize')} placeholder="e.g. 25" />
+              </div>
+            </div>
+
+            {/* Row 4 - Check Size */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label className="input-lbl">Min Check Size ($)</label>
+                <input className="input" type="number" value={formData.checkSizeMin} onChange={handleFormChange('checkSizeMin')} placeholder="e.g. 250000" />
+              </div>
+              <div>
+                <label className="input-lbl">Max Check Size ($)</label>
+                <input className="input" type="number" value={formData.checkSizeMax} onChange={handleFormChange('checkSizeMax')} placeholder="e.g. 2000000" />
+              </div>
+            </div>
+
+            <div>
+              <label className="input-lbl">Bio</label>
+              <textarea className="input" rows={4} value={formData.bio} onChange={handleFormChange('bio')} placeholder="Tell investors about your background and investment thesis…" />
+            </div>
+
+            <div>
+              <label className="input-lbl">Website</label>
+              <input className="input" value={formData.website} onChange={handleFormChange('website')} placeholder="https://" />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label className="input-lbl">LinkedIn</label>
+                <input className="input" value={formData.linkedin} onChange={handleFormChange('linkedin')} placeholder="https://linkedin.com/in/" />
+              </div>
+              <div>
+                <label className="input-lbl">Twitter / X</label>
+                <input className="input" value={formData.twitter} onChange={handleFormChange('twitter')} placeholder="https://x.com/" />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
+              <button type="button" className="btn btn-ghost" onClick={cancelEditing}>
+                Cancel
+              </button>
+              <button type="submit" className="btn btn-accent" disabled={saveProfile.isPending}>
+                <Save size={16} />
+                {saveProfile.isPending ? 'Saving...' : (investor ? 'Update Profile' : 'Create Profile')}
+              </button>
+            </div>
+          </form>
         </div>
       ) : (
-        <div className="prof-url-bar">
-          <span className="prof-url-label">Your profile is private</span>
-          <div className="prof-url-row">
-            <span className="prof-url-text">Make it public to generate a shareable link and social share options.</span>
-            <button className="prof-url-copy" onClick={() => investor && toggleVisibility.mutate(true)} disabled={!investor}>
-              Publish
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="prof-card" style={{ marginBottom: '20px' }}>
-        <div className="prof-section-h">Visibility</div>
-        <div className="prof-stat-list">
-          <div className="prof-stat-item">
-            <Globe size={16} className="prof-stat-ic" />
-            <div>
-              <div className="prof-stat-lbl">Profile status</div>
-              <div className="prof-stat-val">{investor?.isPublic ? 'Public' : 'Private'}</div>
-            </div>
-          </div>
-        </div>
-        <p className="prof-desc" style={{ marginTop: '16px' }}>
-          {investor?.isPublic
-            ? 'Your profile can be viewed and shared publicly.'
-            : 'Keep your profile private until you are ready to share it publicly.'}
-        </p>
-        {!investor && (
-          <p className="prof-desc" style={{ marginTop: '12px' }}>
-            Create your investor profile first to publish a public link.
-          </p>
-        )}
-        {investor?.isPublic && profileUrl && (
-          <div className="prof-links" style={{ marginTop: '16px' }}>
-            <a className="prof-url-copy" href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore.`)}&url=${encodeURIComponent(profileUrl)}`} onClick={(e) => { e.preventDefault(); openShare(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore.`)}&url=${encodeURIComponent(profileUrl)}`); }}>
-              X
-            </a>
-            <a className="prof-url-copy" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`} onClick={(e) => { e.preventDefault(); openShare(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`); }}>
-              LinkedIn
-            </a>
-            <a className="prof-url-copy" href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore. ${profileUrl}`)}`} onClick={(e) => { e.preventDefault(); openShare(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore. ${profileUrl}`)}`); }}>
-              WhatsApp
-            </a>
-          </div>
-        )}
-      </div>
-
-      <div className="prof-layout">
-        {/* Left column */}
-        <div className="prof-left">
-          {/* Identity card */}
-          <div className="prof-card">
-            <div className="prof-avatar-wrap">
-              <div className="prof-avatar prof-avatar-blue">{user?.name?.charAt(0)}</div>
-              <div className="prof-verified">✓</div>
-            </div>
-            <div className="prof-name">{user?.name}</div>
-            <div className="prof-title">{investor?.title || 'Investor'}</div>
-            {investor?.company && (
-              <div className="prof-company">{investor.company}</div>
-            )}
-            {investor?.location && (
-              <div className="prof-meta-row">
-                <MapPin size={14} />
-                {investor.location}
+        <>
+          {investor?.isPublic && profileUrl ? (
+            <div className="prof-url-bar">
+              <span className="prof-url-label">Your public profile link</span>
+              <div className="prof-url-row">
+                <span className="prof-url-text">{profileUrl}</span>
+                <button className="prof-url-copy" onClick={handleCopy}>
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+                <a className="prof-url-open" href={profileUrl} target="_blank" rel="noreferrer">
+                  <ExternalLink size={14} />
+                </a>
               </div>
-            )}
-
-            {investor?.bio && (
-              <p className="prof-bio">{investor.bio}</p>
-            )}
-
-            <div className="prof-links">
-              {investor?.website && (
-                <a href={investor.website} target="_blank" rel="noreferrer" className="prof-link">
-                  <Globe size={15} /> Website
-                </a>
-              )}
-              {investor?.linkedin && (
-                <a href={investor.linkedin} target="_blank" rel="noreferrer" className="prof-link">
-                  <Link2 size={15} /> LinkedIn
-                </a>
-              )}
-              {investor?.twitter && (
-                <a href={investor.twitter} target="_blank" rel="noreferrer" className="prof-link">
-                  <AtSign size={15} /> Twitter
-                </a>
-              )}
             </div>
-          </div>
+          ) : (
+            <div className="prof-url-bar">
+              <span className="prof-url-label">Your profile is private</span>
+              <div className="prof-url-row">
+                <span className="prof-url-text">
+                  {investor
+                    ? 'Make it public to generate a shareable link and social share options.'
+                    : 'Fill in your details to get started.'
+                  }
+                </span>
+                {investor && (
+                  <button className="prof-url-copy" onClick={() => toggleVisibility.mutate(true)} disabled={toggleVisibility.isPending}>
+                    {toggleVisibility.isPending ? 'Publishing...' : 'Publish'}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
-          {/* Investment thesis snapshot */}
-          <div className="prof-card">
-            <div className="prof-section-h">Investment Focus</div>
+          <div className="prof-card" style={{ marginBottom: '20px' }}>
+            <div className="prof-section-h">Visibility</div>
             <div className="prof-stat-list">
               <div className="prof-stat-item">
-                <DollarSign size={16} className="prof-stat-ic" />
+                <Globe size={16} className="prof-stat-ic" />
                 <div>
-                  <div className="prof-stat-lbl">Check Size</div>
-                  <div className="prof-stat-val">{investor?.checkSize || '$250k – $2M'}</div>
-                </div>
-              </div>
-              <div className="prof-stat-item">
-                <TrendingUp size={16} className="prof-stat-ic" />
-                <div>
-                  <div className="prof-stat-lbl">Stage</div>
-                  <div className="prof-stat-val">{(investor?.stage || ['Seed', 'Series A']).join(', ')}</div>
-                </div>
-              </div>
-              <div className="prof-stat-item">
-                <Briefcase size={16} className="prof-stat-ic" />
-                <div>
-                  <div className="prof-stat-lbl">Portfolio Companies</div>
-                  <div className="prof-stat-val">{investor?.portfolio || savedStartups.length} companies</div>
+                  <div className="prof-stat-lbl">Profile status</div>
+                  <div className="prof-stat-val">{investor?.isPublic ? 'Public' : 'Private'}</div>
                 </div>
               </div>
             </div>
+            {visibilityError && (
+              <div className="prof-error-banner">
+                <AlertCircle size={16} />
+                {visibilityError}
+              </div>
+            )}
+            <p className="prof-desc" style={{ marginTop: '16px' }}>
+              {investor?.isPublic
+                ? 'Your profile can be viewed and shared publicly.'
+                : 'Keep your profile private until you are ready to share it publicly.'}
+            </p>
+            {!investor && (
+              <p className="prof-desc" style={{ marginTop: '12px' }}>
+                Click "Create Profile" above to fill in your details.
+              </p>
+            )}
+            {investor && toggleVisibility.isPending && (
+              <p className="prof-desc" style={{ marginTop: '12px', color: 'var(--accent)' }}>
+                Updating visibility...
+              </p>
+            )}
+            {investor?.isPublic && profileUrl && (
+              <div className="prof-links" style={{ marginTop: '16px' }}>
+                <a className="prof-url-copy" href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore.`)}&url=${encodeURIComponent(profileUrl)}`} onClick={(e) => { e.preventDefault(); openShare(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore.`)}&url=${encodeURIComponent(profileUrl)}`); }}>
+                  X
+                </a>
+                <a className="prof-url-copy" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`} onClick={(e) => { e.preventDefault(); openShare(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`); }}>
+                  LinkedIn
+                </a>
+                <a className="prof-url-copy" href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore. ${profileUrl}`)}`} onClick={(e) => { e.preventDefault(); openShare(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore. ${profileUrl}`)}`); }}>
+                  WhatsApp
+                </a>
+              </div>
+            )}
+          </div>
 
-            {investor?.focus?.length > 0 && (
-              <>
-                <div className="prof-stat-lbl" style={{ marginTop: '20px', marginBottom: '10px' }}>Sectors</div>
-                <div className="prof-tags">
-                  {investor.focus.map(f => (
-                    <span key={f} className="prof-tag prof-tag-accent">{f}</span>
+          <div className="prof-layout">
+            {/* Left column */}
+            <div className="prof-left">
+              {/* Identity card */}
+              <div className="prof-card">
+                <div className="prof-avatar-wrap">
+                  <div className="prof-avatar prof-avatar-blue">{user?.name?.charAt(0)}</div>
+                  <div className="prof-verified">✓</div>
+                </div>
+                <div className="prof-name">{user?.name}</div>
+                <div className="prof-title">{investor?.title || 'Investor'}</div>
+                {investor?.company && (
+                  <div className="prof-company">{investor.company}</div>
+                )}
+                {investor?.location && (
+                  <div className="prof-meta-row">
+                    <MapPin size={14} />
+                    {investor.location}
+                  </div>
+                )}
+
+                {investor?.bio && (
+                  <p className="prof-bio">{investor.bio}</p>
+                )}
+
+                <div className="prof-links">
+                  {investor?.website && (
+                    <a href={investor.website} target="_blank" rel="noreferrer" className="prof-link">
+                      <Globe size={15} /> Website
+                    </a>
+                  )}
+                  {investor?.linkedin && (
+                    <a href={investor.linkedin} target="_blank" rel="noreferrer" className="prof-link">
+                      <Link2 size={15} /> LinkedIn
+                    </a>
+                  )}
+                  {investor?.twitter && (
+                    <a href={investor.twitter} target="_blank" rel="noreferrer" className="prof-link">
+                      <AtSign size={15} /> Twitter
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Investment thesis snapshot */}
+              <div className="prof-card">
+                <div className="prof-section-h">Investment Focus</div>
+                <div className="prof-stat-list">
+                  <div className="prof-stat-item">
+                    <DollarSign size={16} className="prof-stat-ic" />
+                    <div>
+                      <div className="prof-stat-lbl">Check Size</div>
+                      <div className="prof-stat-val">{investor?.checkSize || '$250k – $2M'}</div>
+                    </div>
+                  </div>
+                  <div className="prof-stat-item">
+                    <TrendingUp size={16} className="prof-stat-ic" />
+                    <div>
+                      <div className="prof-stat-lbl">Stage</div>
+                      <div className="prof-stat-val">{(investor?.stage || ['Seed', 'Series A']).join(', ')}</div>
+                    </div>
+                  </div>
+                  <div className="prof-stat-item">
+                    <Briefcase size={16} className="prof-stat-ic" />
+                    <div>
+                      <div className="prof-stat-lbl">Portfolio Companies</div>
+                      <div className="prof-stat-val">{investor?.portfolio || savedStartups.length} companies</div>
+                    </div>
+                  </div>
+                </div>
+
+                {investor?.focus?.length > 0 && (
+                  <>
+                    <div className="prof-stat-lbl" style={{ marginTop: '20px', marginBottom: '10px' }}>Sectors</div>
+                    <div className="prof-tags">
+                      {investor.focus.map(f => (
+                        <span key={f} className="prof-tag prof-tag-accent">{f}</span>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Right column */}
+            <div className="prof-right">
+              {/* Activity stats */}
+              <div className="prof-stats-row">
+                <div className="prof-stat-card">
+                  <div className="prof-stat-card-val">{savedStartups.length}</div>
+                  <div className="prof-stat-card-lbl">Startups Saved</div>
+                </div>
+                <div className="prof-stat-card">
+                  <div className="prof-stat-card-val">{investor?.portfolio || 42}</div>
+                  <div className="prof-stat-card-lbl">Portfolio Size</div>
+                </div>
+                <div className="prof-stat-card">
+                  <div className="prof-stat-card-val">3</div>
+                  <div className="prof-stat-card-lbl">Active Reviews</div>
+                </div>
+              </div>
+
+              {/* Saved / Watching */}
+              <div className="prof-card">
+                <div className="prof-section-h" style={{ marginBottom: '20px' }}>
+                  Watching
+                  <span className="prof-count">{savedStartups.length}</span>
+                </div>
+                {savedStartups.length === 0 ? (
+                  <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>No startups saved yet. Browse the deal feed to find opportunities.</p>
+                ) : (
+                  <div className="prof-watch-list">
+                    {savedStartups.map(s => {
+                      const id = s.id || s._id;
+                      const name = s.name || s.companyName || 'Startup';
+                      const industry = s.industry || s.sector || '—';
+                      const stage = s.stage || '—';
+                      const score = s.score ?? s.latestScore?.total ?? '—';
+                      return (
+                        <div key={id} className="prof-watch-row">
+                          <div className="startup-logo" style={{ width: '44px', height: '44px', fontSize: '18px', borderRadius: '10px', flexShrink: 0 }}>
+                            {name.charAt(0)}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div className="prof-watch-name">{name}</div>
+                            <div className="prof-watch-meta">{industry} · {stage}</div>
+                          </div>
+                          <div className="prof-watch-score">{score}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Focus areas detail */}
+              <div className="prof-card">
+                <div className="prof-section-h">About My Thesis</div>
+                <p className="prof-desc">
+                  {investor?.bio || 'Investment thesis not yet provided.'}
+                </p>
+                <div className="prof-tags" style={{ marginTop: '16px' }}>
+                  {(investor?.stage || ['Seed', 'Series A']).map(s => (
+                    <span key={s} className="prof-tag">{s}</span>
                   ))}
                 </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Right column */}
-        <div className="prof-right">
-          {/* Activity stats */}
-          <div className="prof-stats-row">
-            <div className="prof-stat-card">
-              <div className="prof-stat-card-val">{savedStartups.length}</div>
-              <div className="prof-stat-card-lbl">Startups Saved</div>
-            </div>
-            <div className="prof-stat-card">
-              <div className="prof-stat-card-val">{investor?.portfolio || 42}</div>
-              <div className="prof-stat-card-lbl">Portfolio Size</div>
-            </div>
-            <div className="prof-stat-card">
-              <div className="prof-stat-card-val">3</div>
-              <div className="prof-stat-card-lbl">Active Reviews</div>
-            </div>
-          </div>
-
-          {/* Saved / Watching */}
-          <div className="prof-card">
-            <div className="prof-section-h" style={{ marginBottom: '20px' }}>
-              Watching
-              <span className="prof-count">{savedStartups.length}</span>
-            </div>
-            {savedStartups.length === 0 ? (
-              <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>No startups saved yet. Browse the deal feed to find opportunities.</p>
-            ) : (
-              <div className="prof-watch-list">
-                {savedStartups.map(s => {
-                  const id = s.id || s._id;
-                  const name = s.name || s.companyName || 'Startup';
-                  const industry = s.industry || s.sector || '—';
-                  const stage = s.stage || '—';
-                  const score = s.score ?? s.latestScore?.total ?? '—';
-                  return (
-                    <div key={id} className="prof-watch-row">
-                      <div className="startup-logo" style={{ width: '44px', height: '44px', fontSize: '18px', borderRadius: '10px', flexShrink: 0 }}>
-                        {name.charAt(0)}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div className="prof-watch-name">{name}</div>
-                        <div className="prof-watch-meta">{industry} · {stage}</div>
-                      </div>
-                      <div className="prof-watch-score">{score}</div>
-                    </div>
-                  );
-                })}
               </div>
-            )}
-          </div>
-
-          {/* Focus areas detail */}
-          <div className="prof-card">
-            <div className="prof-section-h">About My Thesis</div>
-            <p className="prof-desc">
-              {investor?.bio || 'Investment thesis not yet provided.'}
-            </p>
-            <div className="prof-tags" style={{ marginTop: '16px' }}>
-              {(investor?.stage || ['Seed', 'Series A']).map(s => (
-                <span key={s} className="prof-tag">{s}</span>
-              ))}
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </>
   );
 };
