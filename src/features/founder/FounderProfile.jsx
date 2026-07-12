@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useFounderStartup } from '../../hooks/useFounder';
 import axiosInstance from '../../api/axiosInstance';
-import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, TrendingUp, Lock } from 'lucide-react';
+import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, TrendingUp, Lock, AlertCircle } from 'lucide-react';
 import Spinner from '../../components/ui/Spinner';
 
 const formatStage = (stg) => {
@@ -45,13 +45,21 @@ const FounderProfile = () => {
   const score = startupData?.score;
   const profileUrl = founder?.slug ? `${window.location.origin}/profile/founder/${founder.slug}` : '';
 
+  const [visibilityError, setVisibilityError] = useState(null);
+
   const toggleVisibility = useMutation({
     mutationFn: async (isPublic) => {
+      setVisibilityError(null);
       const { data } = await axiosInstance.patch('/founders/me/visibility', { isPublic });
       return data.data?.founder;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['founderStartup', user?.id] });
+    },
+    onError: (err) => {
+      const msg = err?.response?.data?.message || err?.message || 'Failed to update visibility. Please try again.';
+      setVisibilityError(msg);
+      console.error('Visibility update error:', err);
     }
   });
 
@@ -77,7 +85,7 @@ const FounderProfile = () => {
           text: shareText,
           url: profileUrl,
         });
-      } catch (_) { }
+      } catch { /* User cancelled share dialog */ }
     } else {
       handleCopy();
     }
@@ -117,24 +125,32 @@ const FounderProfile = () => {
           <div className="page-head-sub">Manage your founder profile visibility and share link</div>
         </div>
         <div className="page-head-actions">
-          <button
-            className="prof-share-btn"
-            onClick={() => founder && toggleVisibility.mutate(!founder.isPublic)}
-            disabled={!founder || toggleVisibility.isPending}
-          >
-            <Lock size={16} />
-            {founder?.isPublic ? 'Make Private' : 'Make Public'}
-          </button>
-          {founder?.isPublic && profileUrl && (
+          {!founder ? (
+            <span style={{ fontSize: '13px', color: 'var(--ink-dim)', padding: '8px 0' }}>
+              Create your startup profile first to manage visibility
+            </span>
+          ) : (
             <>
-              <button className="prof-share-btn" onClick={handleShare}>
-                <Share2 size={16} />
-                Share Profile
+              <button
+                className="prof-share-btn"
+                onClick={() => toggleVisibility.mutate(!founder.isPublic)}
+                disabled={toggleVisibility.isPending}
+              >
+                <Lock size={16} />
+                {toggleVisibility.isPending ? 'Updating...' : (founder?.isPublic ? 'Make Private' : 'Make Public')}
               </button>
-              <button className="prof-copy-btn" onClick={handleCopy}>
-                {copied ? <Check size={16} /> : <Copy size={16} />}
-                {copied ? 'Copied!' : 'Copy Link'}
-              </button>
+              {founder?.isPublic && profileUrl && (
+                <>
+                  <button className="prof-share-btn" onClick={handleShare}>
+                    <Share2 size={16} />
+                    Share Profile
+                  </button>
+                  <button className="prof-copy-btn" onClick={handleCopy}>
+                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                    {copied ? 'Copied!' : 'Copy Link'}
+                  </button>
+                </>
+              )}
             </>
           )}
         </div>
@@ -159,10 +175,17 @@ const FounderProfile = () => {
         <div className="prof-url-bar">
           <span className="prof-url-label">Your profile is private</span>
           <div className="prof-url-row">
-            <span className="prof-url-text">Make it public to generate a shareable link and social share options.</span>
-            <button className="prof-url-copy" onClick={() => founder && toggleVisibility.mutate(true)} disabled={!founder}>
-              Publish
-            </button>
+            <span className="prof-url-text">
+              {founder
+                ? 'Make it public to generate a shareable link and social share options.'
+                : 'Create your startup profile first to publish a public link.'
+              }
+            </span>
+            {founder && (
+              <button className="prof-url-copy" onClick={() => toggleVisibility.mutate(true)} disabled={toggleVisibility.isPending}>
+                {toggleVisibility.isPending ? 'Publishing...' : 'Publish'}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -178,6 +201,12 @@ const FounderProfile = () => {
             </div>
           </div>
         </div>
+        {visibilityError && (
+          <div className="prof-error-banner">
+            <AlertCircle size={16} />
+            {visibilityError}
+          </div>
+        )}
         <p className="prof-desc" style={{ marginTop: '16px' }}>
           {founder?.isPublic
             ? 'Your profile and score can be viewed and shared publicly.'
@@ -185,7 +214,12 @@ const FounderProfile = () => {
         </p>
         {!founder && (
           <p className="prof-desc" style={{ marginTop: '12px' }}>
-            Create your startup profile first to publish a public link.
+            You need to create your startup profile first before you can publish a public link.
+          </p>
+        )}
+        {founder && toggleVisibility.isPending && (
+          <p className="prof-desc" style={{ marginTop: '12px', color: 'var(--accent)' }}>
+            Updating visibility...
           </p>
         )}
         {founder?.isPublic && profileUrl && shareLinks && (
