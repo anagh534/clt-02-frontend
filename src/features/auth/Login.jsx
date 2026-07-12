@@ -127,7 +127,7 @@ const Login = () => {
                 <input
                   type="text"
                   className="input filled"
-                  placeholder="123456"
+                  placeholder="******"
                   maxLength="6"
                   value={otp}
                   onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
