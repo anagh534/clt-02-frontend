@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
-import { TrendingUp, Briefcase } from 'lucide-react';
+import { TrendingUp, Briefcase, Eye, EyeOff } from 'lucide-react';
 
 const Signup = () => {
   const [step, setStep] = useState(1);
@@ -11,9 +11,23 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
+  const hasMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
+  const emailLocal = email.toLowerCase().trim().split('@')[0];
+  const isNotSimilarToEmail = !email.trim() || !(
+    password.toLowerCase() === email.toLowerCase().trim() ||
+    (emailLocal.length >= 4 && password.toLowerCase().includes(emailLocal))
+  );
 
   const login = useAuthStore(state => state.login);
   const navigate = useNavigate();
@@ -22,7 +36,17 @@ const Signup = () => {
     if (!name.trim()) return 'Full name is required.';
     if (!email.trim()) return 'Email is required.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Enter a valid email address.';
-    if (password.length < 6) return 'Password must be at least 6 characters.';
+    if (password.length < 8) return 'Password must be at least 8 characters.';
+    if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter.';
+    if (!/\d/.test(password)) return 'Password must contain at least one number.';
+    if (!/[^A-Za-z0-9]/.test(password)) return 'Password must contain at least one special symbol.';
+    
+    // Similarity check
+    const emailLocal = email.toLowerCase().trim().split('@')[0];
+    if (password.toLowerCase() === email.toLowerCase().trim() || (emailLocal.length >= 4 && password.toLowerCase().includes(emailLocal))) {
+      return 'Password cannot contain or be equal to your email address.';
+    }
+
     if (password !== confirm) return 'Passwords do not match.';
     return null;
   };
@@ -136,26 +160,74 @@ const Signup = () => {
 
               <div className="input-grp">
                 <label className="input-lbl">Password</label>
-                <input
-                  type="password"
-                  className="input filled"
-                  placeholder="Min. 6 characters"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="input filled"
+                    placeholder="Enter secure password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    onFocus={() => setIsPasswordFocused(true)}
+                    onBlur={() => setIsPasswordFocused(false)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={(e) => e.preventDefault()}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {password.length > 0 && isPasswordFocused && (
+                  <div className="password-strength-checklist">
+                    <div className="password-strength-title">Password requirements:</div>
+                    <div className={`password-strength-item ${hasMinLength ? 'valid' : 'invalid'}`}>
+                      <span className="password-strength-bullet"></span>
+                      At least 8 characters
+                    </div>
+                    <div className={`password-strength-item ${hasUppercase ? 'valid' : 'invalid'}`}>
+                      <span className="password-strength-bullet"></span>
+                      At least one uppercase letter
+                    </div>
+                    <div className={`password-strength-item ${hasNumber ? 'valid' : 'invalid'}`}>
+                      <span className="password-strength-bullet"></span>
+                      At least one number
+                    </div>
+                    <div className={`password-strength-item ${hasSymbol ? 'valid' : 'invalid'}`}>
+                      <span className="password-strength-bullet"></span>
+                      At least one special symbol
+                    </div>
+                    <div className={`password-strength-item ${isNotSimilarToEmail ? 'valid' : 'invalid'}`}>
+                      <span className="password-strength-bullet"></span>
+                      Not similar to email address
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="input-grp">
                 <label className="input-lbl">Confirm Password</label>
-                <input
-                  type="password"
-                  className="input filled"
-                  placeholder="Repeat your password"
-                  value={confirm}
-                  onChange={e => setConfirm(e.target.value)}
-                  required
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="input filled"
+                    placeholder="Repeat your password"
+                    value={confirm}
+                    onChange={e => setConfirm(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <button

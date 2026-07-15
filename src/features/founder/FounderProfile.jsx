@@ -25,9 +25,9 @@ const formatSector = (sec) => {
 const formatARR = (mrr) => {
   if (mrr === undefined || mrr === null || mrr === '' || isNaN(mrr)) return '—';
   const arr = Number(mrr) * 12;
-  if (arr >= 1000000) return `$${(arr / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
-  if (arr >= 1000) return `$${(arr / 1000).toFixed(0)}k`;
-  return `$${arr}`;
+  if (arr >= 1000000) return `£${(arr / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (arr >= 1000) return `£${(arr / 1000).toFixed(0)}k`;
+  return `£${arr}`;
 };
 
 const formatGrowth = (growth) => {

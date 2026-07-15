@@ -7,7 +7,7 @@ import {
   Globe,
   Link2,
   AtSign,
-  DollarSign,
+  PoundSterling,
   TrendingUp,
   Users,
   ExternalLink,
@@ -32,6 +32,9 @@ const formatStage = (stage) => {
     seriesc: 'Series C',
     growth: 'Growth'
   };
+  if (Array.isArray(stage)) {
+    return stage.map(s => map[s.toLowerCase()] || s).join(', ');
+  }
   return map[stage.toLowerCase()] || stage;
 };
 
@@ -72,17 +75,17 @@ const InvestorDetail = () => {
 
   // Format check size
   const checkSizeDisplay = () => {
+    const formatter = new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP',
+      notation: 'compact',
+      maximumFractionDigits: 1
+    });
     if (investor.checkSizeMin && investor.checkSizeMax) {
-      const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        notation: 'compact',
-        maximumFractionDigits: 1
-      });
       return `${formatter.format(investor.checkSizeMin)} – ${formatter.format(investor.checkSizeMax)}`;
     }
     if (investor.checkSizeMin) {
-      return `From ${investor.checkSizeMin}`;
+      return `From ${formatter.format(investor.checkSizeMin)}`;
     }
     return 'Not specified';
   };
@@ -262,7 +265,7 @@ const InvestorDetail = () => {
               )}
               {investor.checkSizeMin && (
                 <div className="investor-detail-quick-item">
-                  <DollarSign size={15} />
+                  <PoundSterling size={15} />
                   <div>
                     <div className="investor-detail-quick-lbl">Check Size</div>
                     <div className="investor-detail-quick-val">{checkSizeDisplay()}</div>
