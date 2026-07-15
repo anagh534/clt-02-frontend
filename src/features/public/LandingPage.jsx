@@ -156,10 +156,6 @@ const LandingPage = () => {
 
           {/* Left copy */}
           <div className="fvc-hero-copy">
-            <div className="fvc-eyebrow">
-              <Zap size={12} />
-              AI-powered fundraising infrastructure
-            </div>
             <h1 className="fvc-h1">
               Where the world's best startups meet the capital they deserve
             </h1>
