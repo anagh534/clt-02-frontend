@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../api/axiosInstance';
 import Spinner from '../../components/ui/Spinner';
-import { MapPin, Globe, Link2, AtSign, TrendingUp, Briefcase, DollarSign, ArrowLeft, Copy, Check, Share2, ExternalLink } from 'lucide-react';
+import { MapPin, Globe, Link2, AtSign, TrendingUp, Briefcase, PoundSterling, ArrowLeft, Copy, Check, Share2, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 const PublicProfile = () => {
@@ -223,10 +223,10 @@ const PublicProfile = () => {
                 <div className="prof-section-h">Investment Focus</div>
                 <div className="prof-stat-list">
                   <div className="prof-stat-item">
-                    <DollarSign size={16} className="prof-stat-ic" />
+                    <PoundSterling size={16} className="prof-stat-ic" />
                     <div>
                       <div className="prof-stat-lbl">Check Size</div>
-                      <div className="prof-stat-val">{profileUser.checkSize || '$250k – $2M'}</div>
+                      <div className="prof-stat-val">{profileUser.checkSize || '£250k – £2M'}</div>
                     </div>
                   </div>
                   <div className="prof-stat-item">
@@ -282,7 +282,7 @@ const PublicProfile = () => {
                   <div className="prof-metrics-grid">
                     <div className="prof-metric">
                       <div className="prof-metric-lbl">ARR</div>
-                      <div className="prof-metric-val">{score?.inputs?.mrr ? `$${Number(score.inputs.mrr) * 12}` : '—'}</div>
+                      <div className="prof-metric-val">{score?.inputs?.mrr ? `£${(Number(score.inputs.mrr) * 12).toLocaleString()}` : '—'}</div>
                     </div>
                     <div className="prof-metric">
                       <div className="prof-metric-lbl">Growth</div>

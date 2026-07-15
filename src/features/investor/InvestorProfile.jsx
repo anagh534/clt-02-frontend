@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
 import { useSavedStartups } from '../../hooks/useInvestor';
-import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, Briefcase, TrendingUp, DollarSign, Lock, AlertCircle, Edit2, X, Save } from 'lucide-react';
+import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, Briefcase, TrendingUp, PoundSterling, Lock, AlertCircle, Edit2, X, Save } from 'lucide-react';
 import Spinner from '../../components/ui/Spinner';
 
 const InvestorProfile = () => {
@@ -473,10 +473,10 @@ const InvestorProfile = () => {
                 <div className="prof-section-h">Investment Focus</div>
                 <div className="prof-stat-list">
                   <div className="prof-stat-item">
-                    <DollarSign size={16} className="prof-stat-ic" />
+                    <PoundSterling size={16} className="prof-stat-ic" />
                     <div>
                       <div className="prof-stat-lbl">Check Size</div>
-                      <div className="prof-stat-val">{investor?.checkSize || '$250k – $2M'}</div>
+                      <div className="prof-stat-val">{investor?.checkSize || '£250k – £2M'}</div>
                     </div>
                   </div>
                   <div className="prof-stat-item">

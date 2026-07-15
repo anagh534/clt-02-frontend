@@ -239,9 +239,9 @@ const ScoreForm = () => {
 
               <div className="q-group">
                 <div className="q-label">Raising Amount</div>
-                <div className="q-sub">Target funding size in USD</div>
+                <div className="q-sub">Target funding size in GBP</div>
                 <div className="input-grp">
-                  <label className="input-lbl">Target Amount ($)</label>
+                  <label className="input-lbl">Target Amount (£)</label>
                   <input type="number" className="input filled" name="raisingAmount" value={formData.raisingAmount} onChange={handleChange} placeholder="e.g. 500000" />
                 </div>
               </div>
@@ -261,7 +261,7 @@ const ScoreForm = () => {
                 <div className="q-sub">Please enter your exact metrics.</div>
 
                 <div className="input-grp">
-                  <label className="input-lbl">Monthly Revenue (MRR) - USD ($)</label>
+                  <label className="input-lbl">Monthly Revenue (MRR) - GBP (£)</label>
                   <input
                     type="number"
                     className="input filled"

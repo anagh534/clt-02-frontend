@@ -31,7 +31,7 @@ export const mockUsers = [
     avatar: null,
     profileSlug: 'bob-investor-u2',
     focus: ['SaaS / AI', 'CleanTech', 'HealthTech'],
-    checkSize: '$250k – $2M',
+    checkSize: '£250k – £2M',
     stage: ['Pre-Seed', 'Seed', 'Series A'],
     portfolio: 42,
   }
@@ -47,7 +47,7 @@ export const mockStartups = [
     stage: 'Seed',
     location: 'San Francisco, CA',
     score: 85,
-    metrics: { arr: '$150k', growth: '15% MoM', runway: '12 months' },
+    metrics: { arr: '£150k', growth: '15% MoM', runway: '12 months' },
     description: 'TechFlow AI helps enterprises automate their document workflows using advanced LLMs.',
     savedBy: []
   },
@@ -60,7 +60,7 @@ export const mockStartups = [
     stage: 'Series A',
     location: 'Austin, TX',
     score: 92,
-    metrics: { arr: '$1.2M', growth: '5% MoM', runway: '24 months' },
+    metrics: { arr: '£1.2M', growth: '5% MoM', runway: '24 months' },
     description: 'Developing high-density battery storage for solar grids.',
     savedBy: ['u2']
   },
@@ -73,7 +73,7 @@ export const mockStartups = [
     stage: 'Pre-Seed',
     location: 'Boston, MA',
     score: 74,
-    metrics: { arr: '$0', growth: 'N/A', runway: '8 months' },
+    metrics: { arr: '£0', growth: 'N/A', runway: '8 months' },
     description: 'A platform connecting disparate EHR systems into a single patient timeline.',
     savedBy: []
   }

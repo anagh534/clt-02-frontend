@@ -42,7 +42,7 @@ const DealFeed = () => {
                 </div>
               </div>
               <div className="startup-meta">
-                <div>Raising <b>${startup.metrics?.raising || `${((idx + 1) * 0.5).toFixed(1)}M`}</b></div>
+                <div>Raising <b>£{startup.metrics?.raising || `${((idx + 1) * 0.5).toFixed(1)}M`}</b></div>
                 <div>MRR <b>{startup.metrics?.arr || 'N/A'}</b></div>
                 <div>Growth <b>{startup.metrics?.growth || 'N/A'}</b></div>
               </div>

@@ -4,7 +4,7 @@ import axiosInstance from '../../api/axiosInstance';
 import {
   ArrowLeft, Mail, Phone, Calendar, Shield, Ban, Trash2,
   Edit3, X, CheckCircle, Save, Building, Globe,
-  MapPin, DollarSign, Briefcase, Eye, Target, UserCheck, AlertTriangle
+  MapPin, PoundSterling, Briefcase, Eye, Target, UserCheck, AlertTriangle
 } from 'lucide-react';
 
 const AdminUserDetail = () => {
@@ -234,7 +234,7 @@ const AdminUserDetail = () => {
                 <>
                   <InfoRow icon={Building} label="Company" value={profile.company} />
                   <InfoRow icon={Target} label="Focus" value={profile.investmentFocus?.join(', ')} />
-                  <InfoRow icon={DollarSign} label="Stage" value={profile.fundingStage} />
+                  <InfoRow icon={PoundSterling} label="Stage" value={profile.fundingStage} />
                   <InfoRow icon={MapPin} label="Location" value={profile.location} />
                   <InfoRow icon={Globe} label="Website" value={profile.website} />
                   <InfoRow icon={Briefcase} label="Portfolio" value={profile.portfolioSize != null ? `${profile.portfolioSize} companies` : null} />
@@ -245,8 +245,8 @@ const AdminUserDetail = () => {
                 <>
                   <InfoRow icon={Building} label="Company" value={profile.companyName} />
                   <InfoRow icon={Target} label="Sector" value={profile.sector} />
-                  <InfoRow icon={DollarSign} label="Stage" value={profile.stage} />
-                  <InfoRow icon={DollarSign} label="Raising" value={profile.raisingAmount ? `$${(profile.raisingAmount).toLocaleString()}` : null} />
+                  <InfoRow icon={PoundSterling} label="Stage" value={profile.stage} />
+                  <InfoRow icon={PoundSterling} label="Raising" value={profile.raisingAmount ? `£${(profile.raisingAmount).toLocaleString()}` : null} />
                   <InfoRow icon={MapPin} label="Location" value={profile.city ? `${profile.city}, ${profile.country}` : null} />
                   <InfoRow icon={Eye} label="Profile Views" value={profile.profileViews != null ? profile.profileViews.toString() : null} />
                 </>

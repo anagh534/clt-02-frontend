@@ -49,14 +49,14 @@ const INVESTOR_BULLETS = [
 const STATS = [
   { value: '2,400+', label: 'Founders scored' },
   { value: '380+',   label: 'Active investors' },
-  { value: '$120M+', label: 'Capital connected' },
+  { value: '£120M+', label: 'Capital connected' },
   { value: '68%',    label: 'Response rate' },
 ];
 
 const PRICING = [
   {
     name: 'Free',
-    price: '$0',
+    price: '£0',
     sub: '/month',
     desc: 'Everything a founder needs to get started.',
     cta: 'Start fundraising — it\'s free',
@@ -71,7 +71,7 @@ const PRICING = [
   },
   {
     name: 'Fundraise OS',
-    price: '$49',
+    price: '£49',
     sub: '/month',
     desc: 'Full fundraising infrastructure for serious rounds.',
     cta: 'Get started',
@@ -198,7 +198,7 @@ const LandingPage = () => {
               <div className="fvc-sc-metrics">
                 <div className="fvc-sc-metric">
                   <div className="fvc-sc-metric-lbl">MRR</div>
-                  <div className="fvc-sc-metric-val">$45,000</div>
+                  <div className="fvc-sc-metric-val">£45,000</div>
                 </div>
                 <div className="fvc-sc-metric">
                   <div className="fvc-sc-metric-lbl">Runway</div>
@@ -206,7 +206,7 @@ const LandingPage = () => {
                 </div>
                 <div className="fvc-sc-metric">
                   <div className="fvc-sc-metric-lbl">Round</div>
-                  <div className="fvc-sc-metric-val">$500K SAFE</div>
+                  <div className="fvc-sc-metric-val">£500K SAFE</div>
                 </div>
               </div>
 

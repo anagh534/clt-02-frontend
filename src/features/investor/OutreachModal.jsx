@@ -26,7 +26,7 @@ const OutreachModal = ({ startup, onClose }) => {
 
   const founderName = startup.founderName || 'Founder';
   const tier = getTierLetter(startup.score);
-  const raisingStr = startup.metrics?.raising ? `$${formatNumber(startup.metrics.raising)}` : 'your target raise';
+  const raisingStr = startup.metrics?.raising ? `£${formatNumber(startup.metrics.raising)}` : 'your target raise';
 
   useEffect(() => {
     if (startup && user) {
