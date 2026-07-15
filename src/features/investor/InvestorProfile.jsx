@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
@@ -6,10 +6,224 @@ import { useSavedStartups } from '../../hooks/useInvestor';
 import { Copy, Check, Share2, ExternalLink, MapPin, Globe, Link2, AtSign, Briefcase, TrendingUp, PoundSterling, Lock, AlertCircle, Edit2, X, Save } from 'lucide-react';
 import Spinner from '../../components/ui/Spinner';
 
+const STAGE_OPTIONS = [
+  { value: 'preseed', label: 'Pre-Seed' },
+  { value: 'seed', label: 'Seed' },
+  { value: 'seriesa', label: 'Series A' },
+  { value: 'seriesb', label: 'Series B' },
+  { value: 'seriesc', label: 'Series C' },
+  { value: 'growth', label: 'Growth' }
+];
+
+const COUNTRIES = [
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'US', name: 'United States' },
+  { code: 'AF', name: 'Afghanistan' },
+  { code: 'AL', name: 'Albania' },
+  { code: 'DZ', name: 'Algeria' },
+  { code: 'AS', name: 'American Samoa' },
+  { code: 'AD', name: 'Andorra' },
+  { code: 'AO', name: 'Angola' },
+  { code: 'AI', name: 'Anguilla' },
+  { code: 'AQ', name: 'Antarctica' },
+  { code: 'AG', name: 'Antigua and Barbuda' },
+  { code: 'AR', name: 'Argentina' },
+  { code: 'AM', name: 'Armenia' },
+  { code: 'AW', name: 'Aruba' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'AT', name: 'Austria' },
+  { code: 'AZ', name: 'Azerbaijan' },
+  { code: 'BS', name: 'Bahamas' },
+  { code: 'BH', name: 'Bahrain' },
+  { code: 'BD', name: 'Bangladesh' },
+  { code: 'BB', name: 'Barbados' },
+  { code: 'BY', name: 'Belarus' },
+  { code: 'BE', name: 'Belgium' },
+  { code: 'BZ', name: 'Belize' },
+  { code: 'BJ', name: 'Benin' },
+  { code: 'BM', name: 'Bermuda' },
+  { code: 'BT', name: 'Bhutan' },
+  { code: 'BO', name: 'Bolivia' },
+  { code: 'BA', name: 'Bosnia and Herzegovina' },
+  { code: 'BW', name: 'Botswana' },
+  { code: 'BR', name: 'Brazil' },
+  { code: 'BN', name: 'Brunei' },
+  { code: 'BG', name: 'Bulgaria' },
+  { code: 'BF', name: 'Burkina Faso' },
+  { code: 'BI', name: 'Burundi' },
+  { code: 'KH', name: 'Cambodia' },
+  { code: 'CM', name: 'Cameroon' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'CV', name: 'Cape Verde' },
+  { code: 'KY', name: 'Cayman Islands' },
+  { code: 'CF', name: 'Central African Republic' },
+  { code: 'TD', name: 'Chad' },
+  { code: 'CL', name: 'Chile' },
+  { code: 'CN', name: 'China' },
+  { code: 'CO', name: 'Colombia' },
+  { code: 'KM', name: 'Comoros' },
+  { code: 'CG', name: 'Congo' },
+  { code: 'CD', name: 'Congo, Democratic Republic' },
+  { code: 'CK', name: 'Cook Islands' },
+  { code: 'CR', name: 'Costa Rica' },
+  { code: 'HR', name: 'Croatia' },
+  { code: 'CU', name: 'Cuba' },
+  { code: 'CY', name: 'Cyprus' },
+  { code: 'CZ', name: 'Czech Republic' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'DJ', name: 'Djibouti' },
+  { code: 'DM', name: 'Dominica' },
+  { code: 'DO', name: 'Dominican Republic' },
+  { code: 'EC', name: 'Ecuador' },
+  { code: 'EG', name: 'Egypt' },
+  { code: 'SV', name: 'El Salvador' },
+  { code: 'GQ', name: 'Equatorial Guinea' },
+  { code: 'ER', name: 'Eritrea' },
+  { code: 'EE', name: 'Estonia' },
+  { code: 'ET', name: 'Ethiopia' },
+  { code: 'FJ', name: 'Fiji' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'FR', name: 'France' },
+  { code: 'GA', name: 'Gabon' },
+  { code: 'GM', name: 'Gambia' },
+  { code: 'GE', name: 'Georgia' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'GH', name: 'Ghana' },
+  { code: 'GR', name: 'Greece' },
+  { code: 'GD', name: 'Grenada' },
+  { code: 'GT', name: 'Guatemala' },
+  { code: 'GN', name: 'Guinea' },
+  { code: 'GW', name: 'Guinea-Bissau' },
+  { code: 'GY', name: 'Guyana' },
+  { code: 'HT', name: 'Haiti' },
+  { code: 'HN', name: 'Honduras' },
+  { code: 'HK', name: 'Hong Kong' },
+  { code: 'HU', name: 'Hungary' },
+  { code: 'IS', name: 'Iceland' },
+  { code: 'IN', name: 'India' },
+  { code: 'ID', name: 'Indonesia' },
+  { code: 'IR', name: 'Iran' },
+  { code: 'IQ', name: 'Iraq' },
+  { code: 'IE', name: 'Ireland' },
+  { code: 'IL', name: 'Israel' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'JM', name: 'Jamaica' },
+  { code: 'JP', name: 'Japan' },
+  { code: 'JO', name: 'Jordan' },
+  { code: 'KZ', name: 'Kazakhstan' },
+  { code: 'KE', name: 'Kenya' },
+  { code: 'KI', name: 'Kiribati' },
+  { code: 'KP', name: 'Korea, North' },
+  { code: 'KR', name: 'Korea, South' },
+  { code: 'KW', name: 'Kuwait' },
+  { code: 'KG', name: 'Kyrgyzstan' },
+  { code: 'LA', name: 'Laos' },
+  { code: 'LV', name: 'Latvia' },
+  { code: 'LB', name: 'Lebanon' },
+  { code: 'LS', name: 'Lesotho' },
+  { code: 'LR', name: 'Liberia' },
+  { code: 'LY', name: 'Libya' },
+  { code: 'LI', name: 'Liechtenstein' },
+  { code: 'LT', name: 'Lithuania' },
+  { code: 'LU', name: 'Luxembourg' },
+  { code: 'MO', name: 'Macau' },
+  { code: 'MK', name: 'North Macedonia' },
+  { code: 'MG', name: 'Madagascar' },
+  { code: 'MW', name: 'Malawi' },
+  { code: 'MY', name: 'Malaysia' },
+  { code: 'MV', name: 'Maldives' },
+  { code: 'ML', name: 'Mali' },
+  { code: 'MT', name: 'Malta' },
+  { code: 'MH', name: 'Marshall Islands' },
+  { code: 'MR', name: 'Mauritania' },
+  { code: 'MU', name: 'Mauritius' },
+  { code: 'MX', name: 'Mexico' },
+  { code: 'FM', name: 'Micronesia' },
+  { code: 'MD', name: 'Moldova' },
+  { code: 'MC', name: 'Monaco' },
+  { code: 'MN', name: 'Mongolia' },
+  { code: 'ME', name: 'Montenegro' },
+  { code: 'MS', name: 'Montserrat' },
+  { code: 'MA', name: 'Morocco' },
+  { code: 'MZ', name: 'Mozambique' },
+  { code: 'MM', name: 'Myanmar' },
+  { code: 'NA', name: 'Namibia' },
+  { code: 'NR', name: 'Nauru' },
+  { code: 'NP', name: 'Nepal' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'NZ', name: 'New Zealand' },
+  { code: 'NI', name: 'Nicaragua' },
+  { code: 'NE', name: 'Niger' },
+  { code: 'NG', name: 'Nigeria' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'OM', name: 'Oman' },
+  { code: 'PK', name: 'Pakistan' },
+  { code: 'PW', name: 'Palau' },
+  { code: 'PA', name: 'Panama' },
+  { code: 'PG', name: 'Papua New Guinea' },
+  { code: 'PY', name: 'Paraguay' },
+  { code: 'PE', name: 'Peru' },
+  { code: 'PH', name: 'Philippines' },
+  { code: 'PL', name: 'Poland' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'PR', name: 'Puerto Rico' },
+  { code: 'QA', name: 'Qatar' },
+  { code: 'RO', name: 'Romania' },
+  { code: 'RU', name: 'Russia' },
+  { code: 'RW', name: 'Rwanda' },
+  { code: 'KN', name: 'Saint Kitts and Nevis' },
+  { code: 'LC', name: 'Saint Lucia' },
+  { code: 'VC', name: 'Saint Vincent' },
+  { code: 'WS', name: 'Samoa' },
+  { code: 'SM', name: 'San Marino' },
+  { code: 'ST', name: 'Sao Tome and Principe' },
+  { code: 'SA', name: 'Saudi Arabia' },
+  { code: 'SN', name: 'Senegal' },
+  { code: 'RS', name: 'Serbia' },
+  { code: 'SC', name: 'Seychelles' },
+  { code: 'SL', name: 'Sierra Leone' },
+  { code: 'SG', name: 'Singapore' },
+  { code: 'SK', name: 'Slovakia' },
+  { code: 'SI', name: 'Slovenia' },
+  { code: 'SB', name: 'Solomon Islands' },
+  { code: 'SO', name: 'Somalia' },
+  { code: 'ZA', name: 'South Africa' },
+  { code: 'ES', name: 'Spain' },
+  { code: 'LK', name: 'Sri Lanka' },
+  { code: 'SD', name: 'Sudan' },
+  { code: 'SR', name: 'Suriname' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'SY', name: 'Syria' },
+  { code: 'TW', name: 'Taiwan' },
+  { code: 'TJ', name: 'Tajikistan' },
+  { code: 'TZ', name: 'Tanzania' },
+  { code: 'TH', name: 'Thailand' },
+  { code: 'TL', name: 'Timor-Leste' },
+  { code: 'TG', name: 'Togo' },
+  { code: 'TO', name: 'Tonga' },
+  { code: 'TT', name: 'Trinidad and Tobago' },
+  { code: 'TN', name: 'Tunisia' },
+  { code: 'TR', name: 'Turkey' },
+  { code: 'TM', name: 'Turkmenistan' },
+  { code: 'UG', name: 'Uganda' },
+  { code: 'UA', name: 'Ukraine' },
+  { code: 'AE', name: 'United Arab Emirates' },
+  { code: 'UY', name: 'Uruguay' },
+  { code: 'UZ', name: 'Uzbekistan' },
+  { code: 'VU', name: 'Vanuatu' },
+  { code: 'VE', name: 'Venezuela' },
+  { code: 'VN', name: 'Vietnam' },
+  { code: 'YE', name: 'Yemen' },
+  { code: 'ZM', name: 'Zambia' },
+  { code: 'ZW', name: 'Zimbabwe' }
+];
+
 const InvestorProfile = () => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
+  const formHeaderRef = useRef(null);
 
   const { data: profileData, isLoading } = useQuery({
     queryKey: ['investorProfile', user?.id],
@@ -32,7 +246,7 @@ const InvestorProfile = () => {
     company: '',
     title: '',
     investmentFocus: '',
-    fundingStage: '',
+    fundingStage: [],
     location: '',
     country: '',
     city: '',
@@ -58,12 +272,27 @@ const InvestorProfile = () => {
     onError: (err) => {
       const msg = err?.response?.data?.message || err?.message || 'Failed to save profile. Please try again.';
       setFormError(msg);
+      formHeaderRef.current?.scrollIntoView({ behavior: 'smooth' });
       console.error('Profile save error:', err);
     }
   });
 
   const handleFormChange = (field) => (e) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleStageCheckboxChange = (stageValue) => (e) => {
+    const isChecked = e.target.checked;
+    setFormData(prev => {
+      const currentStages = Array.isArray(prev.fundingStage) ? prev.fundingStage : [];
+      const nextStages = isChecked
+        ? [...currentStages, stageValue]
+        : currentStages.filter(s => s !== stageValue);
+      return {
+        ...prev,
+        fundingStage: nextStages
+      };
+    });
   };
 
   const startEditing = () => {
@@ -73,7 +302,9 @@ const InvestorProfile = () => {
         company: investor.company || '',
         title: investor.title || '',
         investmentFocus: Array.isArray(investor.focus) ? investor.focus.join(', ') : (investor.investmentFocus || []).join(', '),
-        fundingStage: investor.fundingStage || investor.stage || '',
+        fundingStage: Array.isArray(investor.fundingStage)
+          ? investor.fundingStage
+          : (investor.fundingStage ? [investor.fundingStage] : (Array.isArray(investor.stage) ? investor.stage : [])),
         location: investor.location || '',
         country: investor.country || '',
         city: investor.city || '',
@@ -100,6 +331,16 @@ const InvestorProfile = () => {
 
     if (!user?.name) {
       setFormError('Your name is required. Please update your account settings.');
+      formHeaderRef.current?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    const minVal = formData.checkSizeMin ? Number(formData.checkSizeMin) : undefined;
+    const maxVal = formData.checkSizeMax ? Number(formData.checkSizeMax) : undefined;
+
+    if (minVal !== undefined && maxVal !== undefined && maxVal < minVal) {
+      setFormError('Maximum check size cannot be less than minimum check size.');
+      formHeaderRef.current?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
     
@@ -229,7 +470,7 @@ const InvestorProfile = () => {
 
       {/* Profile URL bar */}
       {editMode ? (
-        <div className="prof-card" style={{ marginBottom: '20px' }}>
+        <div ref={formHeaderRef} className="prof-card" style={{ marginBottom: '20px' }}>
           <div className="prof-section-h" style={{ marginBottom: '20px' }}>
             {investor ? 'Edit Profile' : 'Create Profile'}
             <button className="prof-url-copy" style={{ marginLeft: 'auto' }} onClick={cancelEditing}>
@@ -265,7 +506,12 @@ const InvestorProfile = () => {
               </div>
               <div>
                 <label className="input-lbl">Country</label>
-                <input className="input" value={formData.country} onChange={handleFormChange('country')} placeholder="e.g. US" />
+                <select className="input" value={formData.country} onChange={handleFormChange('country')}>
+                  <option value="">Select country...</option>
+                  {COUNTRIES.map(c => (
+                    <option key={c.code} value={c.code}>{c.name} ({c.code})</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -282,15 +528,23 @@ const InvestorProfile = () => {
             {/* Row 3 */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
-                <label className="input-lbl">Funding Stage</label>
-                <select className="input" value={formData.fundingStage} onChange={handleFormChange('fundingStage')}>
-                  <option value="">Select stage</option>
-                  <option value="preseed">Pre-Seed</option>
-                  <option value="seed">Seed</option>
-                  <option value="seriesa">Series A</option>
-                  <option value="seriesb">Series B</option>
-                  <option value="growth">Growth</option>
-                </select>
+                <label className="input-lbl">Funding Stages</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: '6px' }}>
+                  {STAGE_OPTIONS.map(opt => {
+                    const isChecked = Array.isArray(formData.fundingStage) && formData.fundingStage.includes(opt.value);
+                    return (
+                      <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer', color: 'var(--ink-dim)' }}>
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={handleStageCheckboxChange(opt.value)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        {opt.label}
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
               <div>
                 <label className="input-lbl">Portfolio Size</label>
@@ -301,11 +555,11 @@ const InvestorProfile = () => {
             {/* Row 4 - Check Size */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
-                <label className="input-lbl">Min Check Size ($)</label>
+                <label className="input-lbl">Min Check Size (£)</label>
                 <input className="input" type="number" value={formData.checkSizeMin} onChange={handleFormChange('checkSizeMin')} placeholder="e.g. 250000" />
               </div>
               <div>
-                <label className="input-lbl">Max Check Size ($)</label>
+                <label className="input-lbl">Max Check Size (£)</label>
                 <input className="input" type="number" value={formData.checkSizeMax} onChange={handleFormChange('checkSizeMax')} placeholder="e.g. 2000000" />
               </div>
             </div>
@@ -476,21 +730,60 @@ const InvestorProfile = () => {
                     <PoundSterling size={16} className="prof-stat-ic" />
                     <div>
                       <div className="prof-stat-lbl">Check Size</div>
-                      <div className="prof-stat-val">{investor?.checkSize || '£250k – £2M'}</div>
+                      <div className="prof-stat-val">
+                        {(() => {
+                          const formatter = new Intl.NumberFormat('en-GB', {
+                            style: 'currency',
+                            currency: 'GBP',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                          });
+                          const min = investor?.checkSizeMin;
+                          const max = investor?.checkSizeMax;
+                          if (min != null && max != null) {
+                            return `${formatter.format(min)} – ${formatter.format(max)}`;
+                          }
+                          if (min != null) {
+                            return `From ${formatter.format(min)}`;
+                          }
+                          if (max != null) {
+                            return `Up to ${formatter.format(max)}`;
+                          }
+                          return investor?.checkSize || '£250k – £2M';
+                        })()}
+                      </div>
                     </div>
                   </div>
                   <div className="prof-stat-item">
                     <TrendingUp size={16} className="prof-stat-ic" />
                     <div>
                       <div className="prof-stat-lbl">Stage</div>
-                      <div className="prof-stat-val">{(investor?.stage || ['Seed', 'Series A']).join(', ')}</div>
+                      <div className="prof-stat-val">
+                        {(() => {
+                          const stages = Array.isArray(investor?.fundingStage) && investor.fundingStage.length > 0
+                            ? investor.fundingStage
+                            : (Array.isArray(investor?.stage) && investor.stage.length > 0 ? investor.stage : ['Seed', 'Series A']);
+                          
+                          return stages.map(s => {
+                            const map = {
+                              preseed: 'Pre-Seed',
+                              seed: 'Seed',
+                              seriesa: 'Series A',
+                              seriesb: 'Series B',
+                              seriesc: 'Series C',
+                              growth: 'Growth'
+                            };
+                            return map[s.toLowerCase()] || s;
+                          }).join(', ');
+                        })()}
+                      </div>
                     </div>
                   </div>
                   <div className="prof-stat-item">
                     <Briefcase size={16} className="prof-stat-ic" />
                     <div>
                       <div className="prof-stat-lbl">Portfolio Companies</div>
-                      <div className="prof-stat-val">{investor?.portfolio || savedStartups.length} companies</div>
+                      <div className="prof-stat-val">{investor?.portfolioSize != null ? investor.portfolioSize : savedStartups.length} companies</div>
                     </div>
                   </div>
                 </div>

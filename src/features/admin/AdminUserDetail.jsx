@@ -234,7 +234,10 @@ const AdminUserDetail = () => {
                 <>
                   <InfoRow icon={Building} label="Company" value={profile.company} />
                   <InfoRow icon={Target} label="Focus" value={profile.investmentFocus?.join(', ')} />
-                  <InfoRow icon={PoundSterling} label="Stage" value={profile.fundingStage} />
+                  <InfoRow icon={PoundSterling} label="Stage" value={Array.isArray(profile.fundingStage) ? profile.fundingStage.map(s => {
+                    const map = { preseed: 'Pre-Seed', seed: 'Seed', seriesa: 'Series A', seriesb: 'Series B', seriesc: 'Series C', growth: 'Growth' };
+                    return map[s.toLowerCase()] || s;
+                  }).join(', ') : (profile.fundingStage || 'N/A')} />
                   <InfoRow icon={MapPin} label="Location" value={profile.location} />
                   <InfoRow icon={Globe} label="Website" value={profile.website} />
                   <InfoRow icon={Briefcase} label="Portfolio" value={profile.portfolioSize != null ? `${profile.portfolioSize} companies` : null} />

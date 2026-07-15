@@ -32,6 +32,9 @@ const formatStage = (stage) => {
     seriesc: 'Series C',
     growth: 'Growth'
   };
+  if (Array.isArray(stage)) {
+    return stage.map(s => map[s.toLowerCase()] || s).join(', ');
+  }
   return map[stage.toLowerCase()] || stage;
 };
 

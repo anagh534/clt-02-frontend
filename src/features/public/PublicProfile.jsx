@@ -226,21 +226,60 @@ const PublicProfile = () => {
                     <PoundSterling size={16} className="prof-stat-ic" />
                     <div>
                       <div className="prof-stat-lbl">Check Size</div>
-                      <div className="prof-stat-val">{profileUser.checkSize || '£250k – £2M'}</div>
+                      <div className="prof-stat-val">
+                        {(() => {
+                          const formatter = new Intl.NumberFormat('en-GB', {
+                            style: 'currency',
+                            currency: 'GBP',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                          });
+                          const min = profileUser?.checkSizeMin;
+                          const max = profileUser?.checkSizeMax;
+                          if (min != null && max != null) {
+                            return `${formatter.format(min)} – ${formatter.format(max)}`;
+                          }
+                          if (min != null) {
+                            return `From ${formatter.format(min)}`;
+                          }
+                          if (max != null) {
+                            return `Up to ${formatter.format(max)}`;
+                          }
+                          return profileUser?.checkSize || '£250k – £2M';
+                        })()}
+                      </div>
                     </div>
                   </div>
                   <div className="prof-stat-item">
                     <TrendingUp size={16} className="prof-stat-ic" />
                     <div>
                       <div className="prof-stat-lbl">Stage</div>
-                      <div className="prof-stat-val">{(profileUser.stage || ['Seed']).join(', ')}</div>
+                      <div className="prof-stat-val">
+                        {(() => {
+                          const stages = Array.isArray(profileUser?.fundingStage) && profileUser.fundingStage.length > 0
+                            ? profileUser.fundingStage
+                            : (Array.isArray(profileUser?.stage) && profileUser.stage.length > 0 ? profileUser.stage : ['Seed']);
+                          
+                          return stages.map(s => {
+                            const map = {
+                              preseed: 'Pre-Seed',
+                              seed: 'Seed',
+                              seriesa: 'Series A',
+                              seriesb: 'Series B',
+                              seriesc: 'Series C',
+                              growth: 'Growth'
+                            };
+                            return map[s.toLowerCase()] || s;
+                          }).join(', ');
+                        })()}
+                      </div>
                     </div>
                   </div>
                   <div className="prof-stat-item">
                     <Briefcase size={16} className="prof-stat-ic" />
                     <div>
                       <div className="prof-stat-lbl">Portfolio</div>
-                      <div className="prof-stat-val">{profileUser.portfolio || '—'} companies</div>
+                      <div className="prof-stat-val">{profileUser.portfolioSize != null ? profileUser.portfolioSize : '—'} companies</div>
                     </div>
                   </div>
                 </div>
