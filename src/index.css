@@ -957,6 +957,37 @@ select.input {
   cursor: pointer;
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.password-input-wrapper .input {
+  padding-right: 44px;
+}
+.password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--ink-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: var(--r-sm);
+  transition: color var(--ease), background var(--ease);
+}
+.password-toggle-btn:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.05);
+}
+.password-toggle-btn:focus-visible {
+  outline: 1px solid var(--accent);
+}
+
 /* ─────────────────────────────────────────────────────────────
    AUTH
 ───────────────────────────────────────────────────────────── */

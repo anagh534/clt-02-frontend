@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
-import { TrendingUp, Briefcase } from 'lucide-react';
+import { TrendingUp, Briefcase, Eye, EyeOff } from 'lucide-react';
 
 const Signup = () => {
   const [step, setStep] = useState(1);
@@ -11,6 +11,8 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -136,26 +138,46 @@ const Signup = () => {
 
               <div className="input-grp">
                 <label className="input-lbl">Password</label>
-                <input
-                  type="password"
-                  className="input filled"
-                  placeholder="Min. 6 characters"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="input filled"
+                    placeholder="Min. 6 characters"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <div className="input-grp">
                 <label className="input-lbl">Confirm Password</label>
-                <input
-                  type="password"
-                  className="input filled"
-                  placeholder="Repeat your password"
-                  value={confirm}
-                  onChange={e => setConfirm(e.target.value)}
-                  required
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="input filled"
+                    placeholder="Repeat your password"
+                    value={confirm}
+                    onChange={e => setConfirm(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <button
