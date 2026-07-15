@@ -35,12 +35,19 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      await axiosInstance.post('/auth/register/initiate', {
+      const { data } = await axiosInstance.post('/auth/register/initiate', {
         name,
         email,
         password,
         role
       });
+
+      if (data?.user) {
+        login(data.user);
+        navigate(`/${data.user.role}/dashboard`);
+        return;
+      }
+
       setStep(2);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to initiate signup');
@@ -56,7 +63,7 @@ const Signup = () => {
       setError('OTP must be 6 digits.');
       return;
     }
-    
+
     setLoading(true);
     try {
       const { data } = await axiosInstance.post('/auth/register/verify', {
@@ -76,12 +83,12 @@ const Signup = () => {
     <div className="auth-screen">
       <div className="auth-card">
         <div className="auth-logo"><span className="auth-logo-dot"></span>InvestScore</div>
-        
+
         {step === 1 ? (
           <>
             <div className="auth-title">Create Account</div>
             <div className="auth-sub">Join as a founder or investor.</div>
-            
+
             {error && (
               <div style={{ color: 'var(--red)', fontSize: '13px', textAlign: 'center', marginBottom: '16px' }}>
                 {error}
@@ -160,7 +167,7 @@ const Signup = () => {
                 {loading ? 'Sending OTP…' : 'Create Account →'}
               </button>
             </form>
-            
+
             <div className="terms">
               Already have an account?{' '}
               <Link to="/auth/login" style={{ color: 'var(--accent)' }}>Sign in</Link>
@@ -170,7 +177,7 @@ const Signup = () => {
           <>
             <div className="auth-title">Verify Email</div>
             <div className="auth-sub">Enter the 6-digit code sent to {email}.</div>
-            
+
             {error && (
               <div style={{ color: 'var(--red)', fontSize: '13px', textAlign: 'center', marginBottom: '16px' }}>
                 {error}
@@ -200,7 +207,7 @@ const Signup = () => {
               >
                 {loading ? 'Verifying…' : 'Verify & Complete →'}
               </button>
-              
+
               <div className="terms" style={{ marginTop: '16px', cursor: 'pointer' }} onClick={() => setStep(1)}>
                 ← Back
               </div>

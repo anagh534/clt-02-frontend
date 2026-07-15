@@ -249,10 +249,10 @@ const StartupDetails = () => {
             <div className="card">
               <div className="score-bars">
                 {[
-                  { name: 'Financial Health', val: 92 },
-                  { name: 'Team', val: 88 },
-                  { name: 'Traction', val: 81 },
-                  { name: 'Market', val: 79 },
+                  { name: 'Financial Health', val: startup.scoreBreakdown?.financial ?? startup.latestScore?.breakdown?.financial ?? 0 },
+                  { name: 'Team',             val: startup.scoreBreakdown?.team      ?? startup.latestScore?.breakdown?.team      ?? 0 },
+                  { name: 'Traction',         val: startup.scoreBreakdown?.traction  ?? startup.latestScore?.breakdown?.traction  ?? 0 },
+                  { name: 'Market',           val: startup.scoreBreakdown?.market    ?? startup.latestScore?.breakdown?.market    ?? 0 },
                 ].map(item => (
                   <div className="score-bar-row" key={item.name}>
                     <div className="score-bar-head">
