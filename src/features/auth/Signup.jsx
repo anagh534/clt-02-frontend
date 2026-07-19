@@ -4,6 +4,14 @@ import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
 import { TrendingUp, Briefcase, Eye, EyeOff } from 'lucide-react';
 
+const PASSWORD_ERRORS = [
+  'Must be at least 8 characters.',
+  'Must contain at least one uppercase letter.',
+  'Must contain at least one number.',
+  'Must contain at least one special symbol.',
+  'Cannot contain or be equal to your email address.'
+];
+
 const Signup = () => {
   const [step, setStep] = useState(1);
   const [role, setRole] = useState('founder');
@@ -36,18 +44,18 @@ const Signup = () => {
     if (!name.trim()) return 'Full name is required.';
     if (!email.trim()) return 'Email is required.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Enter a valid email address.';
-    if (password.length < 8) return 'Password must be at least 8 characters.';
-    if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter.';
-    if (!/\d/.test(password)) return 'Password must contain at least one number.';
-    if (!/[^A-Za-z0-9]/.test(password)) return 'Password must contain at least one special symbol.';
+    if (password.length < 8) return 'Must be at least 8 characters.';
+    if (!/[A-Z]/.test(password)) return 'Must contain at least one uppercase letter.';
+    if (!/\d/.test(password)) return 'Must contain at least one number.';
+    if (!/[^A-Za-z0-9]/.test(password)) return 'Must contain at least one special symbol.';
     
     // Similarity check
     const emailLocal = email.toLowerCase().trim().split('@')[0];
     if (password.toLowerCase() === email.toLowerCase().trim() || (emailLocal.length >= 4 && password.toLowerCase().includes(emailLocal))) {
-      return 'Password cannot contain or be equal to your email address.';
+      return 'Cannot contain or be equal to your email address.';
     }
 
-    if (password !== confirm) return 'Passwords do not match.';
+    if (password !== confirm) return 'Does not match.';
     return null;
   };
 
@@ -113,7 +121,7 @@ const Signup = () => {
             <div className="auth-title">Create Account</div>
             <div className="auth-sub">Join as a founder or investor.</div>
 
-            {error && (
+            {error && !PASSWORD_ERRORS.includes(error) && error !== 'Does not match.' && (
               <div style={{ color: 'var(--red)', fontSize: '13px', textAlign: 'center', marginBottom: '16px' }}>
                 {error}
               </div>
@@ -121,7 +129,6 @@ const Signup = () => {
 
             <form onSubmit={handleInitiate}>
               <div className="input-grp">
-                <label className="input-lbl">I am a…</label>
                 <div className="role-pick">
                   <div className={`role-pill ${role === 'founder' ? 'selected' : ''}`} onClick={() => setRole('founder')}>
                     <div className="role-pill-ic"><TrendingUp size={22} /></div>
@@ -181,6 +188,11 @@ const Signup = () => {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {error && PASSWORD_ERRORS.includes(error) && (
+                  <div style={{ color: 'var(--red)', fontSize: '12px', marginTop: '4px' }}>
+                    {error}
+                  </div>
+                )}
                 {password.length > 0 && isPasswordFocused && (
                   <div className="password-strength-checklist">
                     <div className="password-strength-title">Password requirements:</div>
@@ -228,6 +240,11 @@ const Signup = () => {
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {error && error === 'Does not match.' && (
+                  <div style={{ color: 'var(--red)', fontSize: '12px', marginTop: '4px' }}>
+                    {error}
+                  </div>
+                )}
               </div>
 
               <button
