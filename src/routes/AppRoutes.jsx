@@ -4,6 +4,7 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import AdminLayout from '../components/layout/AdminLayout';
 import Login from '../features/auth/Login';
 import Signup from '../features/auth/Signup';
+import ForgotPassword from '../features/auth/ForgotPassword';
 import FounderDashboard from '../features/founder/FounderDashboard';
 import FounderProfile from '../features/founder/FounderProfile';
 import ScoreForm from '../features/founder/ScoreForm';
@@ -39,6 +40,7 @@ function AppRoutes() {
       <Route path="/auth" element={<AuthLayout />}>
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
       </Route>
 
       {/* Founder Flow */}
