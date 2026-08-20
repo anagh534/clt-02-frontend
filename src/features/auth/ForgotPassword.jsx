@@ -1,64 +1,65 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
-import { TrendingUp, Briefcase, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
-const Login = () => {
+const ForgotPassword = () => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const login = useAuthStore(state => state.login);
+  
   const navigate = useNavigate();
 
   const handleInitiate = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     setLoading(true);
 
     try {
-      const { data } = await axiosInstance.post('/auth/login/initiate', {
-        email,
-        password
-      });
-
-      if (data?.user) {
-        login(data.user);
-        navigate(`/${data.user.role}/dashboard`);
-        return;
-      }
-
+      const { data } = await axiosInstance.post('/auth/forgot-password', { email });
+      setMessage(data.message || 'OTP sent to your email.');
       setStep(2);
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      setError(err.response?.data?.message || 'Error sending OTP. Make sure the email is registered.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerify = async (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
+    
     if (otp.length !== 6) {
       setError('OTP must be 6 digits.');
+      return;
+    }
+    
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters.');
       return;
     }
 
     setLoading(true);
     try {
-      const { data } = await axiosInstance.post('/auth/login/verify', {
+      const { data } = await axiosInstance.post('/auth/reset-password', {
         email,
-        otp
+        otp,
+        newPassword
       });
-      login(data.user);
-      navigate(`/${data.user.role}/dashboard`);
+      setMessage(data.message || 'Password reset successful!');
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid OTP');
+      setError(err.response?.data?.message || 'Invalid OTP or error resetting password.');
     } finally {
       setLoading(false);
     }
@@ -71,10 +72,11 @@ const Login = () => {
 
         {step === 1 ? (
           <>
-            <div className="auth-title">Welcome Back</div>
-            <div className="auth-sub">Sign in to your account.</div>
+            <div className="auth-title">Forgot Password</div>
+            <div className="auth-sub">Enter your email to receive a reset code.</div>
 
             {error && <div style={{ color: 'var(--red)', textAlign: 'center', marginBottom: '16px', fontSize: '13px' }}>{error}</div>}
+            {message && <div style={{ color: 'var(--green)', textAlign: 'center', marginBottom: '16px', fontSize: '13px' }}>{message}</div>}
 
             <form onSubmit={handleInitiate}>
               <div className="input-grp">
@@ -89,53 +91,25 @@ const Login = () => {
                 />
               </div>
 
-              <div className="input-grp">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label className="input-lbl" style={{ marginBottom: 0 }}>Password</label>
-                  <Link to="/auth/forgot-password" style={{ fontSize: '12px', color: 'var(--accent)', textDecoration: 'none' }}>Forgot Password?</Link>
-                </div>
-                <div className="password-input-wrapper" style={{ marginTop: '6px' }}>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    className="input filled"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle-btn"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
               <button type="submit" className="btn btn-accent btn-full" style={{ marginTop: '6px' }} disabled={loading}>
-                {loading ? 'Signing in...' : 'Sign In →'}
+                {loading ? 'Sending...' : 'Send Reset Code →'}
               </button>
             </form>
 
             <div className="terms" style={{ marginTop: '20px' }}>
-              No account?{' '}
-              <Link to="/auth/signup" style={{ color: 'var(--accent)' }}>Create one</Link>
+              Remembered your password?{' '}
+              <Link to="/auth/login" style={{ color: 'var(--accent)' }}>Sign In</Link>
             </div>
           </>
         ) : (
           <>
-            <div className="auth-title">Verify Login</div>
+            <div className="auth-title">Reset Password</div>
             <div className="auth-sub">Enter the 6-digit code sent to {email}.</div>
 
-            {error && (
-              <div style={{ color: 'var(--red)', fontSize: '13px', textAlign: 'center', marginBottom: '16px' }}>
-                {error}
-              </div>
-            )}
+            {error && <div style={{ color: 'var(--red)', fontSize: '13px', textAlign: 'center', marginBottom: '16px' }}>{error}</div>}
+            {message && <div style={{ color: 'var(--green)', fontSize: '13px', textAlign: 'center', marginBottom: '16px' }}>{message}</div>}
 
-            <form onSubmit={handleVerify}>
+            <form onSubmit={handleReset}>
               <div className="input-grp">
                 <label className="input-lbl">OTP Code</label>
                 <input
@@ -150,17 +124,39 @@ const Login = () => {
                 />
               </div>
 
+              <div className="input-grp">
+                <label className="input-lbl">New Password</label>
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="input filled"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 className="btn btn-accent btn-full"
                 style={{ marginTop: '6px' }}
                 disabled={loading}
               >
-                {loading ? 'Verifying…' : 'Verify & Login →'}
+                {loading ? 'Resetting...' : 'Reset Password →'}
               </button>
 
               <div className="terms" style={{ marginTop: '16px', cursor: 'pointer' }} onClick={() => setStep(1)}>
-                ← Back to login
+                ← Back
               </div>
             </form>
           </>
@@ -170,4 +166,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;
