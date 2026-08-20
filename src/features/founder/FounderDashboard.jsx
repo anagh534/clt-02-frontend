@@ -39,7 +39,7 @@ const FounderDashboard = () => {
           </div>
         </div>
         <div className="card" style={{textAlign: 'center', padding: '60px 20px'}}>
-          <div className="card-h">Calculate your InvestScore</div>
+          <div className="card-h">Calculate your Theliv</div>
           <p style={{color: 'var(--ink-dim)', marginBottom: '24px'}}>You haven't set up your startup profile yet.</p>
           <Link to="/founder/onboarding" className="btn btn-accent">Start Scoring →</Link>
         </div>
@@ -71,7 +71,7 @@ const FounderDashboard = () => {
 
       <div className="dash-grid">
         <div className="hero-score">
-          <div className="score-label">Your InvestScore™</div>
+          <div className="score-label">Your Theliv™</div>
           <div className="score-row">
             <div className="score-big">{score.total}</div>
             <div className="score-max">/ 1000</div>

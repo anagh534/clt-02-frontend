@@ -89,10 +89,10 @@ const PRICING = [
 ];
 
 const FAQS = [
-  { q: 'How is the InvestScore calculated?', a: 'The score weighs stage, ARR, growth rate, customer count, founder background, and profile completeness — producing a single 0–100 signal. The algorithm is transparent: you can see exactly which inputs drive each point.' },
+  { q: 'How is the Theliv calculated?', a: 'The score weighs stage, ARR, growth rate, customer count, founder background, and profile completeness — producing a single 0–100 signal. The algorithm is transparent: you can see exactly which inputs drive each point.' },
   { q: 'Can I update my score after submitting?', a: 'Yes. Return to the scoring form any time and re-submit with updated metrics. Your score recalculates instantly and your profile reflects the new number.' },
   { q: 'Is my data visible to everyone?', a: 'Your public profile shows your score, stage, sector, and tagline. Sensitive metrics like exact ARR are only shared when you choose. Investors\' private scores and notes on your startup are never visible to you.' },
-  { q: 'Is InvestScore free to use?', a: 'Yes — creating a profile and getting your score is completely free. We charge investors for deal-flow access beyond the free tier.' },
+  { q: 'Is Theliv free to use?', a: 'Yes — creating a profile and getting your score is completely free. We charge investors for deal-flow access beyond the free tier.' },
   { q: 'How do investors verify a startup profile?', a: 'Founders with a completed profile receive a verified badge. Investors can also request data rooms directly through the platform.' },
 ];
 
@@ -136,7 +136,7 @@ const LandingPage = () => {
         <div className="fvc-nav-inner">
           <Link to="/" className="fvc-logo">
             <span className="fvc-logo-mark">◆</span>
-            InvestScore
+            Theliv
           </Link>
           <div className="fvc-nav-links">
             <a href="#features" className="fvc-nav-link">Product</a>
@@ -160,7 +160,7 @@ const LandingPage = () => {
               Where the world's best startups meet the capital they deserve
             </h1>
             <p className="fvc-hero-sub">
-              InvestScore connects founders and investors through AI-powered matching,
+              Theliv connects founders and investors through AI-powered matching,
               transparent deal flow, and institutional-grade infrastructure.
             </p>
             <div className="fvc-hero-btns">
@@ -407,10 +407,10 @@ const LandingPage = () => {
         <div className="fvc-footer-inner">
           <div className="fvc-footer-brand">
             <div className="fvc-logo fvc-footer-logo">
-              <span className="fvc-logo-mark">◆</span>InvestScore
+              <span className="fvc-logo-mark">◆</span>Theliv
             </div>
             <div className="fvc-footer-tagline">Built for Founders. Engineered for Investors.</div>
-            <div className="fvc-footer-copy">© 2026 InvestScore Inc. — DE C-Corp</div>
+            <div className="fvc-footer-copy">© 2026 Theliv Inc.</div>
           </div>
           <div className="fvc-footer-cols">
             <div className="fvc-footer-col">

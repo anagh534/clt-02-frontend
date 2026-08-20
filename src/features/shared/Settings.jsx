@@ -5,7 +5,7 @@ import {
   Sun, Moon, User, Mail, Bell, Shield, LogOut, Palette, ChevronRight, Check
 } from 'lucide-react';
 
-const NotifKey = 'investscore-notif-prefs';
+const NotifKey = 'theliv-notif-prefs';
 
 const readPrefs = () => {
   try {
@@ -75,7 +75,7 @@ const Settings = () => {
           <div className="settings-row">
             <div className="settings-row-info">
               <div className="settings-row-title">Theme</div>
-              <div className="settings-row-sub">Choose how InvestScore looks to you</div>
+              <div className="settings-row-sub">Choose how Theliv looks to you</div>
             </div>
             <div className="settings-seg" role="tablist" aria-label="Theme">
               <button

@@ -398,7 +398,7 @@ const InvestorProfile = () => {
 
   const handleShare = async () => {
     if (!profileUrl) return;
-    const shareText = `Check out ${user?.name}'s investor profile on InvestScore.`;
+    const shareText = `Check out ${user?.name}'s investor profile on Theliv.`;
 
     if (navigator.share) {
       try {
@@ -665,13 +665,13 @@ const InvestorProfile = () => {
             )}
             {investor?.isPublic && profileUrl && (
               <div className="prof-links" style={{ marginTop: '16px' }}>
-                <a className="prof-url-copy" href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore.`)}&url=${encodeURIComponent(profileUrl)}`} onClick={(e) => { e.preventDefault(); openShare(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore.`)}&url=${encodeURIComponent(profileUrl)}`); }}>
+                <a className="prof-url-copy" href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on Theliv.`)}&url=${encodeURIComponent(profileUrl)}`} onClick={(e) => { e.preventDefault(); openShare(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on Theliv.`)}&url=${encodeURIComponent(profileUrl)}`); }}>
                   X
                 </a>
                 <a className="prof-url-copy" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`} onClick={(e) => { e.preventDefault(); openShare(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`); }}>
                   LinkedIn
                 </a>
-                <a className="prof-url-copy" href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore. ${profileUrl}`)}`} onClick={(e) => { e.preventDefault(); openShare(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on InvestScore. ${profileUrl}`)}`); }}>
+                <a className="prof-url-copy" href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on Theliv. ${profileUrl}`)}`} onClick={(e) => { e.preventDefault(); openShare(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${user?.name}'s investor profile on Theliv. ${profileUrl}`)}`); }}>
                   WhatsApp
                 </a>
               </div>

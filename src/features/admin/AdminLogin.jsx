@@ -66,7 +66,7 @@ const AdminLogin = () => {
               <input
                 type="email"
                 className="adm-input"
-                placeholder="admin@investscore.com"
+                placeholder="admin@theliv.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

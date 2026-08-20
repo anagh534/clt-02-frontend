@@ -11,7 +11,7 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('investscore-auth');
+  const token = localStorage.getItem('theliv-auth');
   if (token) {
     try {
       const authData = JSON.parse(token);

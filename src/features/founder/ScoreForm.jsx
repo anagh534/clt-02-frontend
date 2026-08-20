@@ -350,7 +350,7 @@ const ScoreForm = () => {
       <div className="page-head">
         <div>
           <div className="page-head-title">Build your score</div>
-          <div className="page-head-sub">Answer a few questions to calculate your InvestScore.</div>
+          <div className="page-head-sub">Answer a few questions to calculate your Theliv.</div>
         </div>
       </div>
 

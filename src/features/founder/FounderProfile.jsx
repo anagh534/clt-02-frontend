@@ -75,8 +75,8 @@ const FounderProfile = () => {
     if (!profileUrl) return;
     const shareTitle = `${user?.name} — Founder Profile`;
     const shareText = score
-      ? `Check out ${user?.name}'s founder profile on InvestScore. Score: ${score.total} (${score.tier}).`
-      : `Check out ${user?.name}'s founder profile on InvestScore.`;
+      ? `Check out ${user?.name}'s founder profile on Theliv. Score: ${score.total} (${score.tier}).`
+      : `Check out ${user?.name}'s founder profile on Theliv.`;
 
     if (navigator.share) {
       try {
@@ -97,8 +97,8 @@ const FounderProfile = () => {
   };
 
   const shareText = score
-    ? `Check out ${user?.name}'s founder profile on InvestScore. Score: ${score.total} (${score.tier}).`
-    : `Check out ${user?.name}'s founder profile on InvestScore.`;
+    ? `Check out ${user?.name}'s founder profile on Theliv. Score: ${score.total} (${score.tier}).`
+    : `Check out ${user?.name}'s founder profile on Theliv.`;
 
   const shareLinks = profileUrl ? {
     x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(profileUrl)}`,
@@ -283,10 +283,10 @@ const FounderProfile = () => {
             </div>
           </div>
 
-          {/* InvestScore card */}
+          {/* Theliv card */}
           {score && (
             <div className="prof-card prof-score-card">
-              <div className="prof-score-label">InvestScore</div>
+              <div className="prof-score-label">Theliv</div>
               <div className="prof-score-num">{score.total}</div>
               <div className="prof-score-tier">
                 <span className="tier-badge">{scoreTier}</span>
@@ -346,7 +346,7 @@ const FounderProfile = () => {
               <p style={{ color: 'var(--ink-dim)', marginBottom: '24px', fontSize: '14px' }}>
                 Complete your startup profile to appear in the deal feed.
               </p>
-              <Link to="/founder/onboarding" className="btn btn-accent">Calculate InvestScore →</Link>
+              <Link to="/founder/onboarding" className="btn btn-accent">Calculate Theliv →</Link>
             </div>
           )}
 

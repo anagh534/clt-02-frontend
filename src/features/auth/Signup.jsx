@@ -114,7 +114,7 @@ const Signup = () => {
   return (
     <div className="auth-screen">
       <div className="auth-card">
-        <div className="auth-logo"><span className="auth-logo-dot"></span>InvestScore</div>
+        <div className="auth-logo"><span className="auth-logo-dot"></span>Theliv</div>
 
         {step === 1 ? (
           <>

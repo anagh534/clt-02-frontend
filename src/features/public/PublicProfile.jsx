@@ -53,8 +53,8 @@ const PublicProfile = () => {
     if (!profileUrl) return;
 
     const shareText = isFounder && score
-      ? `Check out ${displayName}'s profile on InvestScore. Score: ${score.total} (${score.tier}).`
-      : `Check out ${displayName}'s profile on InvestScore.`;
+      ? `Check out ${displayName}'s profile on Theliv. Score: ${score.total} (${score.tier}).`
+      : `Check out ${displayName}'s profile on Theliv.`;
 
     if (navigator.share) {
       try {
@@ -82,7 +82,7 @@ const PublicProfile = () => {
     return (
       <div className="pub-not-found">
         <div className="pub-logo-bar">
-          <Link to="/auth/login" className="sidebar-logo" style={{ textDecoration: 'none' }}>InvestScore</Link>
+          <Link to="/auth/login" className="sidebar-logo" style={{ textDecoration: 'none' }}>Theliv</Link>
         </div>
         <div className="pub-not-found-body">
           <div className="prof-card" style={{ textAlign: 'center', padding: '64px 32px', maxWidth: '480px', margin: '0 auto' }}>
@@ -91,7 +91,7 @@ const PublicProfile = () => {
             <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '24px' }}>
               This profile link may be invalid or the owner has kept the profile private.
             </p>
-            <Link to="/auth/login" className="btn btn-accent">Go to InvestScore →</Link>
+            <Link to="/auth/login" className="btn btn-accent">Go to Theliv →</Link>
           </div>
         </div>
       </div>
@@ -99,8 +99,8 @@ const PublicProfile = () => {
   }
   const scoreTier = score?.tier || 'C';
   const shareText = isFounder && score
-    ? `Check out ${displayName}'s profile on InvestScore. Score: ${score.total} (${score.tier}).`
-    : `Check out ${displayName}'s profile on InvestScore.`;
+    ? `Check out ${displayName}'s profile on Theliv. Score: ${score.total} (${score.tier}).`
+    : `Check out ${displayName}'s profile on Theliv.`;
   const shareLinks = profileUrl ? {
     x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(profileUrl)}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(profileUrl)}`,
@@ -112,7 +112,7 @@ const PublicProfile = () => {
       {/* Top bar */}
       <div className="pub-topbar">
         <Link to="/auth/login" className="pub-back">
-          <ArrowLeft size={16} /> InvestScore
+          <ArrowLeft size={16} /> Theliv
         </Link>
         <div className="pub-topbar-badge">
           {isFounder ? 'Founder Profile' : 'Investor Profile'}
@@ -205,7 +205,7 @@ const PublicProfile = () => {
             {/* Score card for founder */}
             {isFounder && score && (
               <div className="prof-card prof-score-card">
-                <div className="prof-score-label">InvestScore</div>
+                <div className="prof-score-label">Theliv</div>
                 <div className="prof-score-num">{score.total}</div>
                 <div className="prof-score-tier">
                   <span className="tier-badge">{scoreTier}</span>
@@ -379,7 +379,7 @@ const PublicProfile = () => {
         {/* CTA footer */}
         <div className="pub-cta">
           <div className="pub-cta-text">
-            <div className="pub-cta-title">Discover top startups on InvestScore</div>
+            <div className="pub-cta-title">Discover top startups on Theliv</div>
             <div className="pub-cta-sub">AI-powered investment scoring for smarter decisions</div>
           </div>
           <Link to="/auth/login" className="btn btn-accent">Get Started Free →</Link>

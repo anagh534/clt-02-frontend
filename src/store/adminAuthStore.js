@@ -8,12 +8,12 @@ export const useAdminAuthStore = create(
       isAuthenticated: false,
       login: (adminData) => set({ admin: adminData, isAuthenticated: true }),
       logout: () => {
-        localStorage.removeItem('investscore-admin');
+        localStorage.removeItem('theliv-admin');
         set({ admin: null, isAuthenticated: false });
       },
     }),
     {
-      name: 'investscore-admin',
+      name: 'theliv-admin',
     }
   )
 );

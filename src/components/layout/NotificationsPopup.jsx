@@ -33,7 +33,7 @@ const DEMO_NOTIFICATIONS = [
     id: 'n4',
     icon: MessageSquare,
     tone: 'muted',
-    title: 'Welcome to InvestScore',
+    title: 'Welcome to Theliv',
     body: 'Complete your profile to unlock the deal feed.',
     time: '3d ago',
     unread: false,

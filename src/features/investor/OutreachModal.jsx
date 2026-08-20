@@ -30,11 +30,11 @@ const OutreachModal = ({ startup, onClose }) => {
 
   useEffect(() => {
     if (startup && user) {
-      setSubject(`Investment Inquiry: ${startup.name} (InvestScore: ${startup.score} - Tier ${tier})`);
+      setSubject(`Investment Inquiry: ${startup.name} (Theliv: ${startup.score} - Tier ${tier})`);
       setBody(
         `Hi ${founderName},\n\n` +
         `I hope this email finds you well.\n\n` +
-        `I saw ${startup.name} on the InvestScore platform and was impressed by your profile (InvestScore: ${startup.score}/1000 - Tier ${tier}). ` +
+        `I saw ${startup.name} on the Theliv platform and was impressed by your profile (Theliv: ${startup.score}/1000 - Tier ${tier}). ` +
         `I'd love to connect and learn more about your progress in ${startup.industry || 'your sector'} and ${raisingStr}.\n\n` +
         `Best regards,\n` +
         `${user.name}`

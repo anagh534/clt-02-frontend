@@ -28,7 +28,7 @@ export const useAuthStore = create(
       }
     }),
     {
-      name: 'investscore-auth', // localStorage key
+      name: 'theliv-auth', // localStorage key
     }
   )
 );
