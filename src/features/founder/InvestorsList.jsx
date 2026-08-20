@@ -46,6 +46,8 @@ const SkeletonCard = () => (
 
 /* ─── Stage badge colors ────────────────────────────────────── */
 const stageBadgeClass = (stage) => {
+  if (Array.isArray(stage)) stage = stage[0];
+  if (typeof stage !== 'string') return 'badge-blue';
   const map = {
     preseed: 'badge-amber',
     seed: 'badge-blue',
@@ -59,6 +61,8 @@ const stageBadgeClass = (stage) => {
 
 const formatStage = (stage) => {
   if (!stage) return 'N/A';
+  if (Array.isArray(stage)) return stage.map(formatStage).join(', ');
+  if (typeof stage !== 'string') return String(stage);
   const map = {
     preseed: 'Pre-Seed',
     seed: 'Seed',
@@ -390,11 +394,11 @@ const InvestorsList = () => {
 
                   {/* Stage & Portfolio badges */}
                   <div className="investor-card-badges">
-                    {investor.fundingStage && (
-                      <span className={`badge ${stageBadgeClass(investor.fundingStage)}`}>
-                        {formatStage(investor.fundingStage)}
+                    {investor.fundingStage && (Array.isArray(investor.fundingStage) ? investor.fundingStage : [investor.fundingStage]).map((stg, idx) => (
+                      <span key={idx} className={`badge ${stageBadgeClass(stg)}`}>
+                        {formatStage(stg)}
                       </span>
-                    )}
+                    ))}
                     {investor.portfolioSize > 0 && (
                       <span className="badge badge-blue">
                         {investor.portfolioSize} portfolio

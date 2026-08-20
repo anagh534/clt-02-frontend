@@ -24,6 +24,8 @@ import ErrorState from '../../components/ui/ErrorState';
 
 const formatStage = (stage) => {
   if (!stage) return 'N/A';
+  if (Array.isArray(stage)) return stage.map(formatStage).join(', ');
+  if (typeof stage !== 'string') return String(stage);
   const map = {
     preseed: 'Pre-Seed',
     seed: 'Seed',

@@ -22,10 +22,14 @@ import ErrorState from '../../components/ui/ErrorState';
 /* ─── Stage helpers ─────────────────────────────────────────── */
 const formatStage = (stage) => {
   if (!stage) return 'N/A';
+  if (Array.isArray(stage)) return stage.map(formatStage).join(', ');
+  if (typeof stage !== 'string') return String(stage);
   const map = { preseed: 'Pre-Seed', seed: 'Seed', seriesa: 'Series A', seriesb: 'Series B', seriesc: 'Series C', growth: 'Growth' };
   return map[stage.toLowerCase()] || stage;
 };
 const stageBadgeClass = (stage) => {
+  if (Array.isArray(stage)) stage = stage[0];
+  if (typeof stage !== 'string') return 'badge-blue';
   const map = { preseed: 'badge-amber', seed: 'badge-blue', seriesa: 'badge-purple', seriesb: 'badge-green', seriesc: 'badge-green', growth: 'badge-green' };
   return map[stage?.toLowerCase()] || 'badge-blue';
 };
@@ -250,7 +254,9 @@ const FounderSaved = () => {
 
                 {/* Badges */}
                 <div className="investor-card-badges">
-                  {investor.fundingStage && <span className={`badge ${stageBadgeClass(investor.fundingStage)}`}>{formatStage(investor.fundingStage)}</span>}
+                  {investor.fundingStage && (Array.isArray(investor.fundingStage) ? investor.fundingStage : [investor.fundingStage]).map((stg, idx) => (
+                      <span key={idx} className={`badge ${stageBadgeClass(stg)}`}>{formatStage(stg)}</span>
+                    ))}
                   {investor.portfolioSize > 0 && <span className="badge badge-blue">{investor.portfolioSize} portfolio</span>}
                 </div>
 
