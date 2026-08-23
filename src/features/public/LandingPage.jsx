@@ -136,7 +136,7 @@ const LandingPage = () => {
         <div className="fvc-nav-inner">
           <Link to="/" className="fvc-logo">
             <span className="fvc-logo-mark">◆</span>
-            Theliv
+            THELIV
           </Link>
           <div className="fvc-nav-links">
             <a href="#features" className="fvc-nav-link">Product</a>

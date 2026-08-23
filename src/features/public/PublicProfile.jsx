@@ -82,7 +82,7 @@ const PublicProfile = () => {
     return (
       <div className="pub-not-found">
         <div className="pub-logo-bar">
-          <Link to="/auth/login" className="sidebar-logo" style={{ textDecoration: 'none' }}>Theliv</Link>
+          <Link to="/auth/login" className="sidebar-logo" style={{ textDecoration: 'none' }}>THELIV</Link>
         </div>
         <div className="pub-not-found-body">
           <div className="prof-card" style={{ textAlign: 'center', padding: '64px 32px', maxWidth: '480px', margin: '0 auto' }}>
@@ -112,7 +112,7 @@ const PublicProfile = () => {
       {/* Top bar */}
       <div className="pub-topbar">
         <Link to="/auth/login" className="pub-back">
-          <ArrowLeft size={16} /> Theliv
+          <ArrowLeft size={16} /> THELIV
         </Link>
         <div className="pub-topbar-badge">
           {isFounder ? 'Founder Profile' : 'Investor Profile'}

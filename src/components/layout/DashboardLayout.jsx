@@ -49,7 +49,7 @@ export const Sidebar = ({ open, onClose }) => {
           <div className="sidebar-head">
             <Link to={`/${user.role}/dashboard`} className="sidebar-logo">
               <span className="sidebar-logo-icon">◆</span>
-              Theliv
+              THELIV
             </Link>
             <button className="sidebar-close-btn" onClick={onClose} aria-label="Close menu">
               <X size={18} />
@@ -132,7 +132,7 @@ const DashboardLayout = ({ allowedRoles = [] }) => {
         <div className="page-topbar">
           <div className="page-topbar-left">
             <div className="page-topbar-title">
-              <span style={{ color: 'var(--accent)' }}>◆</span> Theliv
+              <span style={{ color: 'var(--accent)' }}>◆</span> THELIV
             </div>
           </div>
           <div className="page-topbar-right">
@@ -176,7 +176,7 @@ const DashboardLayout = ({ allowedRoles = [] }) => {
             <Menu size={20} />
           </button>
           <span className="mobile-topnav-logo">
-            <span style={{ color: 'var(--accent)' }}>◆</span> Theliv
+            <span style={{ color: 'var(--accent)' }}>◆</span> THELIV
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button

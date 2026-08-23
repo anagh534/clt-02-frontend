@@ -21,7 +21,7 @@ const Sidebar = () => {
         <div className="sidebar-header">
           <NavLink to={`/${user?.role}/dashboard`} className="d-flex align-items-center gap-2 text-decoration-none" onClick={closeSidebar}>
             <Activity className="text-primary" size={28} />
-            <span className="h4 mb-0 fw-bold score-gradient">Theliv</span>
+            <span className="h4 mb-0 fw-bold score-gradient">THELIV</span>
           </NavLink>
         </div>
         
