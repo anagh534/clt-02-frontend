@@ -35,13 +35,46 @@ const FounderDashboard = () => {
         <div className="page-head">
           <div>
             <div className="page-head-title">Welcome, {user?.name?.split(' ')[0]}</div>
-            <div className="page-head-sub">Let's get you set up.</div>
+            <div className="page-head-sub">{founder?.companyName ? `${founder.companyName} · Setup in progress` : "Here is your startup overview."}</div>
+          </div>
+          <div className="page-head-actions">
+            <Link to="/founder/profile" className="btn btn-outline btn-sm">View Profile</Link>
           </div>
         </div>
-        <div className="card" style={{textAlign: 'center', padding: '60px 20px'}}>
-          <div className="card-h">Calculate your Theliv</div>
-          <p style={{color: 'var(--ink-dim)', marginBottom: '24px'}}>You haven't set up your startup profile yet.</p>
-          <Link to="/founder/onboarding" className="btn btn-accent">Start Scoring →</Link>
+
+        <div className="card" style={{ textAlign: 'center', padding: '48px 20px', marginBottom: 'var(--sp-5)' }}>
+          <div className="card-h">Welcome to your Founder Dashboard</div>
+          <p style={{ color: 'var(--ink-dim)', maxWidth: '480px', margin: '0 auto 24px', fontSize: '14px' }}>
+            Set up your startup details in your Profile to view your live score and track investor interest.
+          </p>
+          <Link to="/founder/profile" className="btn btn-accent">Go to Profile →</Link>
+        </div>
+
+        <div className="stat-row">
+          <div className="stat-card">
+            <div className="stat-icon"><Eye size={18} /></div>
+            <div className="stat-lbl">Profile Views</div>
+            <div className="stat-val">{founder?.profileViews || 0}</div>
+            <div className="stat-trend">—</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-icon"><Bookmark size={18} /></div>
+            <div className="stat-lbl">Investor Saves</div>
+            <div className="stat-val">{founder?.savedBy?.length || 0}</div>
+            <div className="stat-trend">—</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-icon"><TrendingUp size={18} /></div>
+            <div className="stat-lbl">Score Rank</div>
+            <div className="stat-val">—</div>
+            <div className="stat-trend">—</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-icon"><Star size={18} /></div>
+            <div className="stat-lbl">Investor Interest</div>
+            <div className="stat-val">—</div>
+            <div className="stat-trend">—</div>
+          </div>
         </div>
       </>
     );

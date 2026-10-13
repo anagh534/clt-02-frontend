@@ -126,11 +126,16 @@ const FounderProfile = () => {
         </div>
         <div className="page-head-actions">
           {!founder ? (
-            <span style={{ fontSize: '13px', color: 'var(--ink-dim)', padding: '8px 0' }}>
-              Create your startup profile first to manage visibility
-            </span>
+            <Link to="/founder/onboarding" className="btn btn-accent btn-sm">
+              Start Scoring →
+            </Link>
           ) : (
             <>
+              {!score && (
+                <Link to="/founder/onboarding" className="btn btn-accent btn-sm">
+                  Start Scoring →
+                </Link>
+              )}
               <button
                 className="prof-share-btn"
                 onClick={() => toggleVisibility.mutate(!founder.isPublic)}
@@ -284,7 +289,7 @@ const FounderProfile = () => {
           </div>
 
           {/* Theliv card */}
-          {score && (
+          {score ? (
             <div className="prof-card prof-score-card">
               <div className="prof-score-label">Theliv</div>
               <div className="prof-score-num">{score.total}</div>
@@ -297,6 +302,17 @@ const FounderProfile = () => {
               </div>
               <Link to="/founder/onboarding" className="btn btn-accent btn-full" style={{ marginTop: '20px', fontSize: '14px', padding: '14px' }}>
                 Update Metrics
+              </Link>
+            </div>
+          ) : (
+            <div className="prof-card prof-score-card">
+              <div className="prof-score-label">Theliv Score</div>
+              <div className="prof-score-num" style={{ fontSize: '42px', color: 'var(--ink-dim)' }}>—</div>
+              <div style={{ fontSize: '13px', color: 'var(--ink-dim)', margin: '12px 0 20px', lineHeight: '1.4' }}>
+                Calculate your startup's Theliv score to unlock investor insights and tier ranking.
+              </div>
+              <Link to="/founder/onboarding" className="btn btn-accent btn-full" style={{ fontSize: '14px', padding: '14px' }}>
+                Start Scoring →
               </Link>
             </div>
           )}
@@ -342,11 +358,11 @@ const FounderProfile = () => {
             </div>
           ) : (
             <div className="prof-card" style={{ textAlign: 'center', padding: '48px 32px' }}>
-              <div className="prof-section-h" style={{ marginBottom: '12px' }}>No startup yet</div>
+              <div className="prof-section-h" style={{ marginBottom: '12px' }}>Calculate your Theliv</div>
               <p style={{ color: 'var(--ink-dim)', marginBottom: '24px', fontSize: '14px' }}>
-                Complete your startup profile to appear in the deal feed.
+                You haven't set up your startup profile yet. Complete the questionnaire to start scoring and appear in the deal feed.
               </p>
-              <Link to="/founder/onboarding" className="btn btn-accent">Calculate Theliv →</Link>
+              <Link to="/founder/onboarding" className="btn btn-accent">Start Scoring →</Link>
             </div>
           )}
 
