@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import axiosInstance from '../../api/axiosInstance';
@@ -25,6 +25,9 @@ const Signup = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [resendMessage, setResendMessage] = useState('');
 
   const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
@@ -108,6 +111,36 @@ const Signup = () => {
       setError(err.response?.data?.message || 'Invalid OTP');
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const handleResendOtp = async () => {
+    if (resendTimer > 0 || resending) return;
+    setResending(true);
+    setError('');
+    setResendMessage('');
+
+    try {
+      const { data } = await axiosInstance.post('/auth/resend-otp', {
+        email,
+        type: 'register'
+      });
+      setResendMessage(data?.message || 'OTP resent to your email.');
+      setResendTimer(30);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to resend OTP');
+    } finally {
+      setResending(false);
     }
   };
 
@@ -273,6 +306,12 @@ const Signup = () => {
               </div>
             )}
 
+            {resendMessage && (
+              <div style={{ color: 'var(--green, #10b981)', fontSize: '13px', textAlign: 'center', marginBottom: '16px' }}>
+                {resendMessage}
+              </div>
+            )}
+
             <form onSubmit={handleVerify}>
               <div className="input-grp">
                 <label className="input-lbl">OTP Code</label>
@@ -297,10 +336,39 @@ const Signup = () => {
                 {loading ? 'Verifying…' : 'Verify & Complete →'}
               </button>
 
-              <div className="terms" style={{ marginTop: '16px', cursor: 'pointer' }} onClick={() => setStep(1)}>
+              <div style={{ textAlign: 'center', marginTop: '14px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                Didn't receive the code?{' '}
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={resending || resendTimer > 0}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    font: 'inherit',
+                    color: resending || resendTimer > 0 ? 'var(--text-muted)' : 'var(--accent)',
+                    cursor: resending || resendTimer > 0 ? 'default' : 'pointer',
+                    fontWeight: 600
+                  }}
+                >
+                  {resending ? 'Sending…' : resendTimer > 0 ? `Resend code in ${resendTimer}s` : 'Resend Code'}
+                </button>
+              </div>
+
+              <div
+                className="terms"
+                style={{ marginTop: '16px', cursor: 'pointer' }}
+                onClick={() => {
+                  setStep(1);
+                  setResendMessage('');
+                  setError('');
+                }}
+              >
                 ← Back
               </div>
             </form>
+
           </>
         )}
       </div>

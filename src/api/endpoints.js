@@ -5,6 +5,8 @@ export const ENDPOINTS = {
   REFRESH: '/auth/refresh',
   FORGOT_PASSWORD: '/auth/forgot-password',
   VERIFY_OTP: '/auth/verify-otp',
+  RESEND_OTP: '/auth/resend-otp',
+
 
   // User
   PROFILE: '/user/profile',
